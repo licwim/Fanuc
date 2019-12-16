@@ -1,2 +1,0 @@
-# Fanuc
- Syntec and NC
