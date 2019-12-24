@@ -16,6 +16,10 @@ class mywindow(QtWidgets.QMainWindow):
 	filelist = []
 	savepath = os.getcwd() + "\\Converted_NC_files"
 
+	msgPathNotFound = ''
+	msgConvertError = ''
+	msgConvertDone = ''
+
 	def __init__(self):
 		super(mywindow, self).__init__()
 		self.ui = Ui_MainWindow()
@@ -28,8 +32,31 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.btnBrowseOpenFile.clicked.connect(self.clickBrowseOpenFile)
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
-		mywindow.filelist = self.findFilelist(os.getcwd())
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
+		mywindow.filelist = self.findFilelist(os.getcwd())
+		self.msgBoxes()
+
+
+	def msgBoxes(self):
+		mywindow.msgPathNotFound = QtWidgets.QMessageBox()
+		mywindow.msgConvertError = QtWidgets.QMessageBox()
+		mywindow.msgConvertDone = QtWidgets.QMessageBox()
+
+		mywindow.msgPathNotFound.setWindowTitle("Error:")
+		mywindow.msgPathNotFound.setText("This path is not found.")
+		mywindow.msgPathNotFound.setIcon(QtWidgets.QMessageBox.Critical)
+		mywindow.msgPathNotFound.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+		mywindow.msgConvertError.setWindowTitle("Error:")
+		mywindow.msgConvertError.setText("Convert error!")
+		mywindow.msgConvertError.setIcon(QtWidgets.QMessageBox.Warning)
+		mywindow.msgConvertError.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+		mywindow.msgConvertDone.setWindowTitle("Succes")
+		mywindow.msgConvertDone.setText("Convert is done.")
+		mywindow.msgConvertDone.setIcon(QtWidgets.QMessageBox.Information)
+		mywindow.msgConvertDone.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
 
 
 	def clickConvert(self):
@@ -42,31 +69,34 @@ class mywindow(QtWidgets.QMainWindow):
 			text = self.ui.textOld.toPlainText()
 			lines = text.split('\n')
 			lines = converter(lines)
-			# print(type(lines), lines)
 			fulltext = '\n'.join(lines)
 			self.ui.textNew.setText(fulltext)
 			# line = converter(oldfile)
 		elif mywindow.filetype == "list":
 			filelist = mywindow.filelist
-			# print (filelist)
 			for file in filelist:
-				lines = converter(self.convertFile(file))
-				newfile = open(savepath + "/[F2NC] " + os.path.basename(file), "w")
-				newfile.writelines(lines)
+				lines = converter(self.openFile(file))
+				# print(lines)
+				if not lines: break
+				newfile = open("%s/[F2NC] %s" % (savepath, os.path.basename(file)), "w")
+				newfile.write('\n'.join(lines))
 				newfile.close()
-		else:
-			self.ui.textNew.setText("ERR: Convert error!")
+			if lines: mywindow.msgConvertDone.exec()
+		else: mywindow.msgConvertError.exec()
 
 
-	def convertFile(self, filename):
-		# print(filename)
+	def openFile(self, filename):
+		print(filename)
+		if not os.access(filename, os.R_OK):
+			mywindow.msgPathNotFound.exec()
+			return ()
 		file = open(filename)
 		lines = file.readlines()
 		file.close()
 		return (lines)
 
 	def clickBrowseOpenFile(self):
-		path = QtWidgets.QFileDialog.getOpenFileName(self, "Select file", "","All Files (*);;FANUC Files (*.nc)")[0]
+		path = QtWidgets.QFileDialog.getOpenFileName(self, "Select file", "","All Files (*)")[0]
 		if not path:
 			return (1)
 		self.ui.lineOpen.setText(path)
@@ -83,25 +113,27 @@ class mywindow(QtWidgets.QMainWindow):
 		path = self.ui.lineOpen.text()
 		# print(path)
 		if os.path.isfile(path):
+			self.ui.textNew.clear()
 			file = open(path)
 			text = file.read()
-			self.ui.textNew.clear()
 			self.ui.textOld.setText(text)
 			file.close()
 			mywindow.filetype = "file"
 		elif os.path.isdir(path):
+			self.ui.textOld.clear()
 			mywindow.filelist = self.findFilelist(path)
 			mywindow.filetype = "list"
 		else:
-			self.ui.textNew.setText("ERR: File not exist or not suppoted.")
 			mywindow.filetype = "err"
+			mywindow.msgPathNotFound.exec()
 
 	def findFilelist(self, path):
+		os.chdir(path)
 		files = os.listdir(path)
 		filelist = []
 		# print (files)
 		for file in files:
-			if (not os.path.isdir(file)) and file.lower().endswith(".nc"):
+			if not os.path.isdir(file):
 				filelist.append(file)
 		self.ui.textNew.setText("\n".join(filelist))
 		return (filelist)
@@ -113,19 +145,13 @@ class mywindow(QtWidgets.QMainWindow):
 		mywindow.savepath = path
 		self.ui.lineSave.setText(path)
 
-		# print(type(text), text)
-
-
-
 
 def main():
-	app = QtWidgets.QApplication([])  # Новый экземпляр QApplication
-	window = mywindow()  # Создаём объект класса MyWindow
-	window.show()  # Показываем окно
-	# app.exec_()  # и запускаем приложение
+	app = QtWidgets.QApplication([])
+	window = mywindow()
+	window.show()
 	sys.exit(app.exec())
 
-if __name__ == '__main__':  # Если мы запускаем файл напрямую, а не импортируем
-	main()  # то запускаем функцию main()
-
+if __name__ == '__main__':
+	main()
 input("Press Enter")
