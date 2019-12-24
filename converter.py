@@ -23,12 +23,10 @@ def converter(lines):
 	return (newlines)
 
 def convertLine(line):
-	if line.startswith('X') or line.startswith('Y') or line.startswith('Z'):
-		return (convertCoords(line))
-	elif line.startswith("IF"):
-		return (convertIf(line))
-	else:
-		return (line)
+	if line.startswith('X') or line.startswith('Y') or line.startswith('Z'): return (convertCoords(line))
+	elif line.startswith("IF"): return (convertIf(line))
+	elif "FUP" in line: return (convertFup(line))
+	else: return (line)
 
 def checkN(line):
 	global maxN
@@ -119,8 +117,8 @@ class CoordLine:
 		# print(firstline, secondline)
 
 def convertIf(line):
-	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.find("THEN")])
-	blocks.append(line[line.find("THEN") + 4:])
+	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.index("THEN")])
+	blocks.append(line[line.index("THEN") + 4:])
 	print(blocks)
 	if "OR" in line: newlines = opOrIf(blocks)
 	else: newlines = opAndIf(blocks)
@@ -135,11 +133,11 @@ def opAndIf(blocks):
 
 	exitN = freeN + len(blocks) - 1
 	for block in blocks[:-1]:
-		newlines.append("IF" + block + "GOTO" + str(freeN))
-		newlines.append("GOTO" + str(exitN))
-		newlines.append("N" + str(freeN))
+		newlines.append("IF%sGOTO%d" % (block, freeN))
+		newlines.append("GOTO%d" % exitN)
+		newlines.append("N%d" % freeN)
 		freeN += 1
-	newlines.extend([blocks[-1], "N" + str(exitN)])
+	newlines.extend([blocks[-1], "N%d" % exitN])
 	print("AND: ", newlines)
 	maxN = freeN
 	return (newlines)
@@ -151,10 +149,27 @@ def opOrIf(blocks):
 	
 	exitN = freeN + 1
 	for block in blocks[:-1]:
-		newlines.append("IF" + block + "GOTO" + str(freeN))
-	newlines.append("GOTO" + str(exitN))
-	newlines.append("N" + str(freeN))
-	newlines.extend([blocks[-1], "N" + str(exitN)])
+		newlines.append("IF%sGOTO%d" % (block, freeN))
+	newlines.append("GOTO%d" % exitN)
+	newlines.append("N%d" % freeN)
+	newlines.extend([blocks[-1], "N%d" % exitN])
 	print("OR: ",newlines)
 	maxN = freeN
 	return (newlines)
+
+def convertFup(line):
+	global maxvar
+	global maxN
+	freevar = maxvar + 1
+	freeN = maxN + 1
+	newlines = []
+	var = line[:line.index('=')]
+	math = line[line.index("FUP") + 4:-1]
+	newlines.append("#%d=%s" % (freevar, math))
+	newlines.append("#%d=FIX[#%d]" % (freevar + 1, freevar))
+	newlines.append("IF[#%d-#%dGE0.0001]GOTO%d" % (freevar, freevar + 1, freeN))
+	newlines.extend(["GOTO%d" % (freeN + 1), "N%d" % freeN])
+	newlines.append("#%d=%d+1" % (freevar, freevar + 1))
+	newlines.extend(["N%d" % (freeN + 1), "%s=#%d" % (var, freevar)])
+	print(newlines)
+	return ('\n'.join(newlines))
