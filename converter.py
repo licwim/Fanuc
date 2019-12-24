@@ -1,0 +1,160 @@
+import re
+
+maxvar = 0
+maxN = 0
+
+def converter(lines):
+	buflines = []
+	newlines = []
+	i = 0
+	for line in lines:
+		# print('NEW LINE: %s' % line)
+		# print('LINE: %d' % i)
+		line = convertNum(line)
+		checkN(line)
+		line = line.strip(' ')
+		buflines.append(line)
+		i += 1
+	print(maxvar, maxN)
+	for line in buflines:
+		line = convertLine(line)
+		newlines.append(line)
+
+	return (newlines)
+
+def convertLine(line):
+	if line.startswith('X') or line.startswith('Y') or line.startswith('Z'):
+		return (convertCoords(line))
+	elif line.startswith("IF"):
+		return (convertIf(line))
+	else:
+		return (line)
+
+def checkN(line):
+	global maxN
+
+	find = re.match(r"N\d*", line)
+	# print(find.group(0))
+	if find and int(find.group(0)[1:]) > maxN:
+		maxN = int(find.group(0)[1:])
+
+def convertNum(line):
+	newline = []
+	i = 0
+
+	if not re.search(r"#\d", line):
+		return (line)
+	while i < len(line):
+		j = i
+		i = line.find('#',j)
+		# print(i, line[i:])
+		if i < 0:
+			newline.append(line[j:])
+			break
+		newline.append(line[j:i])
+		i += 1
+		num = []
+		while i < len(line) and line[i].isdigit():
+			num.append(line[i])
+			i += 1
+		# print("NUM: ", num)
+		newline.append(work_with_numbers(num))
+	# print(''.join(newline))
+	return (''.join(newline))
+
+def work_with_numbers(num):
+	global maxvar
+	n = int(''.join(num))
+
+	num.clear()
+	num.append('#')
+	if n > 99:
+		n -= 40
+	elif n > 0 and n < 27:
+		n += 30
+	elif n == 0:
+		n = 999999
+		num.pop()
+	num.append(str(n))
+	if n != 999999 and n > maxvar:
+		maxvar = n
+	return (''.join(num))
+
+def convertCoords(line):
+	firstline = []
+	secondline = []
+
+	buflines = re.findall(r"[XYZ][^XYZ]*",line)
+	# print(buflines)
+	for line in buflines:
+		coordline = CoordLine()
+		if '[' in line:
+			coordline.convertOneCoord(line)
+			firstline.append(coordline.firstline)
+			secondline.append(coordline.secondline)
+			# print(coordline.firstline)
+		else:
+			secondline.append(line)
+	newline = '\n'.join(firstline)
+	newline += '\n' + ' '.join(secondline)
+	return (newline)
+
+class CoordLine:
+
+	firstline = "1"
+	secondline = "2"
+
+	def convertOneCoord(self, line):
+		global maxvar
+		firstline = []
+		secondline = []
+		maxvar += 1
+		freevar = maxvar
+
+		firstline.append(''.join(['#', str(freevar), '=']))
+		firstline.append(line[2:-1])
+		secondline.append(''.join([line[0], '#', str(freevar)]))
+		CoordLine.firstline = ''.join(firstline)
+		CoordLine.secondline = ''.join(secondline)
+		# print(firstline, secondline)
+
+def convertIf(line):
+	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.find("THEN")])
+	blocks.append(line[line.find("THEN") + 4:])
+	print(blocks)
+	if "OR" in line: newlines = opOrIf(blocks)
+	else: newlines = opAndIf(blocks)
+	# if re.search(r"[[", line):
+	# 	firstline.append(line[2:-1])
+	return ('\n'.join(newlines))
+
+def opAndIf(blocks):
+	global maxN
+	freeN = maxN + 1
+	newlines = []
+
+	exitN = freeN + len(blocks) - 1
+	for block in blocks[:-1]:
+		newlines.append("IF" + block + "GOTO" + str(freeN))
+		newlines.append("GOTO" + str(exitN))
+		newlines.append("N" + str(freeN))
+		freeN += 1
+	newlines.extend([blocks[-1], "N" + str(exitN)])
+	print("AND: ", newlines)
+	maxN = freeN
+	return (newlines)
+	
+def opOrIf(blocks):
+	global maxN
+	freeN = maxN + 1
+	newlines = []
+	
+	exitN = freeN + 1
+	for block in blocks[:-1]:
+		newlines.append("IF" + block + "GOTO" + str(freeN))
+	newlines.append("GOTO" + str(exitN))
+	newlines.append("N" + str(freeN))
+	newlines.extend([blocks[-1], "N" + str(exitN)])
+	print("OR: ",newlines)
+	maxN = freeN
+	return (newlines)
