@@ -4,10 +4,16 @@ maxvar = 0
 maxN = 0
 
 def converter(lines):
+	global maxvar
+	global maxN
 	buflines = []
 	newlines = []
-	i = 0
+	i = 1
+	maxvar = 0
+	maxN = 0
+	# print("MAX: %d, %d" % (maxvar, maxN))
 	for line in lines:
+		# print('LINE: %d' % i)
 		line = convertNum(line)
 		checkN(line)
 		line = checkComments(line)
@@ -67,7 +73,6 @@ def convertLine2(line):
 	line = line.replace('[', '(').replace(']', ')')
 	line = line.replace('#', 'E')
 	return (line)
-
 
 def checkN(line):
 	global maxN
@@ -155,7 +160,8 @@ class CoordLine:
 		if line[1] == '-':
 			firstline.append(line[1:])
 		else:
-			firstline.append(line[2:-1])
+			if line.count('[', 2) < line.count(']', 2): firstline.append(line[2:line.rindex(']')])
+			else: firstline.append(line[2:-1])
 		# print("FL: %s" % firstline)
 		secondline.append("%s#%d" % (line[0], freevar))
 		CoordLine.firstline = ''.join(firstline)
@@ -172,9 +178,24 @@ def convertIf(line):
 	if "OR" in line: newlines = opOrIf(blocks)
 	elif "AND" in line: newlines = opAndIf(blocks)
 	else: newlines = opNoIf(blocks)
-	newlines.insert(-1, blocks[-1])
 	# if re.search(r"[[", line):
-	# 	firstline.append(line[2:-1])
+	# firstline.append(line[2:-1])
+	return (newlines)
+
+def opNoIf(blocks):
+	global maxN
+	freeN = maxN + 1
+	exitN = freeN + len(blocks) - 1
+	newlines = []
+
+	if "GOTO" in blocks[-1]:
+		return (["IF" + ''.join(blocks)])
+	newlines.append("IF%sGOTO%d" % (blocks[0], freeN))
+	newlines.append("GOTO%d" % exitN)
+	newlines.append("N%d" % freeN)
+	newlines.append(blocks[-1])
+	newlines.append("N%d" % exitN)
+	# print("BLOCK:", blocks)
 	return (newlines)
 
 def opNoIf(blocks):
@@ -198,21 +219,23 @@ def opAndIf(blocks):
 		newlines.append("GOTO%d" % exitN)
 		newlines.append("N%d" % freeN)
 		freeN += 1
+	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
 	# print("AND: ", newlines)
 	maxN = freeN
 	return (newlines)
-	
+
 def opOrIf(blocks):
 	global maxN
 	freeN = maxN + 1
 	newlines = []
-	
+
 	exitN = freeN + 1
 	for block in blocks[:-1]:
 		newlines.append("IF%sGOTO%d" % (block, freeN))
 	newlines.append("GOTO%d" % exitN)
 	newlines.append("N%d" % freeN)
+	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
 	# print("OR: ",newlines)
 	maxN = freeN
