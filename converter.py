@@ -95,8 +95,8 @@ def work_with_numbers(num):
 	num.append('#')
 	if n > 99:
 		n -= 40
-	elif n > 0 and n < 27:
-		n += 30
+	# elif n > 0 and n < 27:
+		# n += 30
 	elif n == 0:
 		n = 999999
 		num.pop()
