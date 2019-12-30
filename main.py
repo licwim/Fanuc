@@ -71,6 +71,7 @@ class mywindow(QtWidgets.QMainWindow):
 		if mywindow.filetype == "file":
 			text = self.ui.textOld.toPlainText()
 			lines = text.split('\n')
+			# print(lines)
 			lines = converter(lines)
 			fulltext = '\n'.join(lines)
 			self.ui.textNew.setText(fulltext)
@@ -89,7 +90,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 
 	def openFile(self, filename):
-		print(filename)
+		print("\t\t", filename)
 		if not os.access(filename, os.R_OK):
 			mywindow.msgPathNotFound.exec()
 			return ()

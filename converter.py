@@ -18,10 +18,12 @@ def converter(lines):
 		checkN(line)
 		line = checkComments(line)
 		buflines.extend(line)
+		i += 1
 	# print(maxvar, maxN)
+	i = 1
 	for line in buflines:
 		# print('NEW LINE: %s' % line)
-		print('LINE: %d' % i)
+		# print('LINE: %d' % i)
 		lines = convertLine1(line)
 		lines = convertLines(lines)
 		newlines.extend(lines)
@@ -33,7 +35,7 @@ def convertLines(lines):
 	for line in lines:
 		line = line.strip(' \n')
 		if line:
-			line = convertLine2(line)
+			# line = convertLine2(line)
 			newlines += [line]
 	return (newlines)
 
@@ -42,6 +44,8 @@ def checkComments(line):
 	if '(' in line and ')' in line:
 		newline = line.partition('(')
 		lines = [newline[0], ';' + newline[1] + newline[2]]
+		lines[0] = lines[0].strip(' \n')
+		lines[1] = lines[1].strip(' \n')
 	return (lines)
 
 def convertLine1(line):
@@ -60,9 +64,9 @@ def convertLine2(line):
 		line = '(BNC,"N%s")%s' % (N, line[line.index(N) + len(N):])
 	if line.startswith("IF"):
 		N = line[line.index("GOTO") + 4:]
-		# print("N: %s" % N)
+		print("N: %s" % N)
 		block = re.search(r"\[[^\[\]]*\]", line)[0]
-		# print("BLOCK: %s" % block)
+		print("BLOCK: %s" % block)
 		op = re.search(r"[A-Z]+", block)[0]
 		var1 = block[1:block.index(op)]
 		var2 = block[block.index(op) + len(op):-1]
@@ -77,7 +81,7 @@ def convertLine2(line):
 def checkN(line):
 	global maxN
 
-	find = re.match(r"N\d*", line)
+	find = re.match(r"N\d+", line)
 	# print(find.group(0))
 	if find and int(find.group(0)[1:]) > maxN:
 		maxN = int(find.group(0)[1:])
@@ -104,7 +108,7 @@ def convertNum(line):
 		# print("NUM: ", num)
 		newline.append(work_with_numbers(num))
 	# print(''.join(newline))
-	return ([''.join(newline)])
+	return (''.join(newline))
 
 def work_with_numbers(num):
 	global maxvar
@@ -178,6 +182,7 @@ def convertIf(line):
 	if "OR" in line: newlines = opOrIf(blocks)
 	elif "AND" in line: newlines = opAndIf(blocks)
 	else: newlines = opNoIf(blocks)
+	print(re.findall(r"\[.*\]", line[:line.rindex(search)]))
 	# if re.search(r"[[", line):
 	# firstline.append(line[2:-1])
 	return (newlines)
@@ -197,16 +202,6 @@ def opNoIf(blocks):
 	newlines.append("N%d" % exitN)
 	# print("BLOCK:", blocks)
 	return (newlines)
-
-def opNoIf(blocks):
-	global maxN
-	freeN = maxN + 1
-	newlines = []
-
-	print("BLOCKS:", blocks)
-	return (blocks)
-
-
 
 def opAndIf(blocks):
 	global maxN
