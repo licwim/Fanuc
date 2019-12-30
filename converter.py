@@ -15,22 +15,39 @@ def converter(lines):
 	# print(maxvar, maxN)
 	for line in buflines:
 		# print('NEW LINE: %s' % line)
-		# print('LINE: %d' % i)
-		templines = convertLine(line)
+		print('LINE: %d' % i)
+		templines = convertLine1(line)
 		lines = []
 		for line in templines:
 			line = line.strip(' \n')
-			if line: lines += [line]
+			if line:
+				print(type(line), line)
+				line = convertLine2(line)
+				lines += [line]
 		newlines.extend(lines)
 		i += 1
 
 	return (newlines)
 
-def convertLine(line):
+def convertLine1(line):
 	if line.startswith('X') or line.startswith('Y') or line.startswith('Z'): return (convertCoords(line))
 	elif line.startswith("IF") and ("AND" in line or "OR" in line): return (convertIf(line))
 	elif "FUP" in line: return (convertFup(line))
 	else: return ([line])
+
+def convertLine2(line):
+	# line = ''
+	if "FIX" in line: return (line.replace("FIX", "INT"))
+	elif '(' in line:
+		newline = line.partition('(')
+		return ('\n'.join([newline[0], ';' + newline[1] + newline[2]]))
+	elif re.match(r"N\d+", line): return ('"%s"' % line)
+	elif line.startswith("GOTO"): return ('BNC,"N%s"' % line.replace(' ', '')[4:])
+	elif line.startswith("IF"):
+		block = re.search(r"\[[^\[\]]*\]", line).group(0)
+		print("BLOCK: %s" % block)
+		return (line)
+
 
 def checkN(line):
 	global maxN
@@ -87,9 +104,10 @@ def convertCoords(line):
 	secondline = []
 
 	buflines = re.findall(r"[XYZ][^XYZ]*",line)
+	# print("BUFF: %s" % buflines)
 	for line in buflines:
 		coordline = CoordLine()
-		if '[' in line:
+		if '[' in line or '-#' in line:
 			coordline.convertOneCoord(line)
 			firstline.append(coordline.firstline)
 			secondline.append(coordline.secondline)
@@ -97,7 +115,7 @@ def convertCoords(line):
 		else:
 			secondline.append(line)
 	secondline = [' '.join(secondline)]
-	print(firstline + secondline)
+	# print(firstline + secondline)
 	return (firstline + secondline)
 
 class CoordLine:
@@ -112,9 +130,14 @@ class CoordLine:
 		maxvar += 1
 		freevar = maxvar
 
-		firstline.append(''.join(['#', str(freevar), '=']))
-		firstline.append(line[2:-1])
-		secondline.append(''.join([line[0], '#', str(freevar)]))
+		line = line.replace(' ', '')
+		firstline.append("#%d=" % freevar)
+		if line[1] == '-':
+			firstline.append(line[1:])
+		else:
+			firstline.append(line[2:-1])
+		# print("FL: %s" % firstline)
+		secondline.append("%s#%d" % (line[0], freevar))
 		CoordLine.firstline = ''.join(firstline)
 		CoordLine.secondline = ''.join(secondline)
 		# print(firstline, secondline)
@@ -124,7 +147,7 @@ def convertIf(line):
 	else: search = "GOTO"
 	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.rindex(search)])
 	blocks.append(line[line.index(search) + 4:])
-	print(blocks)
+	# print(blocks)
 	if "OR" in line: newlines = opOrIf(blocks)
 	else: newlines = opAndIf(blocks)
 	newlines.insert(-1, blocks[-1])
@@ -177,5 +200,5 @@ def convertFup(line):
 	newlines.extend(["GOTO%d" % (freeN + 1), "N%d" % freeN])
 	newlines.append("#%d=#%d+1" % (freevar, freevar + 1))
 	newlines.extend(["N%d" % (freeN + 1), "%s=#%d" % (var, freevar)])
-	print(newlines)
+	# print(newlines)
 	return (newlines)
