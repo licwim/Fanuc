@@ -173,15 +173,15 @@ class CoordLine:
 		# print(firstline, secondline)
 
 def convertIf(line):
+	if "OR" in line: newlines = opOrIf(blocks)
+	elif "AND" in line: newlines = opAndIf(blocks)
+	else: newlines = opNoIf(blocks)
 	if "THEN" in line: search = "THEN"
 	else: search = "GOTO"
 	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.rindex(search)])
 	if search == "THEN": blocks.append(line[line.index(search) + 4:])
 	else: blocks.append(line[line.index(search):])
 	# print(blocks)
-	if "OR" in line: newlines = opOrIf(blocks)
-	elif "AND" in line: newlines = opAndIf(blocks)
-	else: newlines = opNoIf(blocks)
 	print(re.findall(r"\[.*\]", line[:line.rindex(search)]))
 	# if re.search(r"[[", line):
 	# firstline.append(line[2:-1])
@@ -203,11 +203,14 @@ def opNoIf(blocks):
 	# print("BLOCK:", blocks)
 	return (newlines)
 
-def opAndIf(blocks):
+def opAndIf(line):
 	global maxN
 	freeN = maxN + 1
 	newlines = []
+	blocks = []
 
+	line = line.partition("AND")
+	blocks[0] = re.search(r"", line[0])
 	exitN = freeN + len(blocks) - 1
 	for block in blocks[:-1]:
 		newlines.append("IF%sGOTO%d" % (block, freeN))
