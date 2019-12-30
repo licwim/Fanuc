@@ -4,15 +4,22 @@ maxvar = 0
 maxN = 0
 
 def converter(lines):
+	global maxvar
+	global maxN
 	buflines = []
 	newlines = []
-	i = 0
+	i = 1
+	maxvar = 0
+	maxN = 0
+	# print("MAX: %d, %d" % (maxvar, maxN))
 	for line in lines:
+		# print('LINE: %d' % i)
 		line = convertNum(line)
 		checkN(line)
 		line = line.strip(' ')
 		buflines.append(line)
-	# print(maxvar, maxN)
+		i += 1
+	# print("MAX: %d, %d" % (maxvar, maxN))
 	for line in buflines:
 		# print('NEW LINE: %s' % line)
 		# print('LINE: %d' % i)
@@ -21,7 +28,7 @@ def converter(lines):
 		for line in templines:
 			line = line.strip(' \n')
 			if line:
-				line = convertLine2(line)
+				# line = convertLine2(line)
 				# print(type(line), line)
 				lines += [line]
 		newlines.extend(lines)
@@ -30,12 +37,11 @@ def converter(lines):
 
 def convertLine1(line):
 	if line.startswith('X') or line.startswith('Y') or line.startswith('Z'): return (convertCoords(line))
-	elif line.startswith("IF") and ("AND" in line or "OR" in line): return (convertIf(line))
+	elif line.startswith("IF") and '[' in line: return (convertIf(line))
 	elif "FUP" in line: return (convertFup(line))
 	else: return ([line])
 
 def convertLine2(line):
-	# line = ''
 	if "FIX" in line: return (line.replace("FIX", "INT"))
 	elif '(' in line:
 		newline = line.partition('(')
@@ -48,7 +54,6 @@ def convertLine2(line):
 		print(re.findall(r"\d", block))
 		return (line)
 	else: return (line)
-
 
 def checkN(line):
 	global maxN
@@ -136,7 +141,8 @@ class CoordLine:
 		if line[1] == '-':
 			firstline.append(line[1:])
 		else:
-			firstline.append(line[2:-1])
+			if line.count('[', 2) < line.count(']', 2): firstline.append(line[2:line.rindex(']')])
+			else: firstline.append(line[2:-1])
 		# print("FL: %s" % firstline)
 		secondline.append("%s#%d" % (line[0], freevar))
 		CoordLine.firstline = ''.join(firstline)
@@ -147,13 +153,30 @@ def convertIf(line):
 	if "THEN" in line: search = "THEN"
 	else: search = "GOTO"
 	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.rindex(search)])
-	blocks.append(line[line.index(search) + 4:])
+	if search == "THEN": blocks.append(line[line.index(search) + 4:])
+	else: blocks.append(line[line.index(search):])
 	# print(blocks)
 	if "OR" in line: newlines = opOrIf(blocks)
-	else: newlines = opAndIf(blocks)
-	newlines.insert(-1, blocks[-1])
+	elif "AND" in line: newlines = opAndIf(blocks)
+	else: newlines = opNoIf(blocks)
 	# if re.search(r"[[", line):
-	# 	firstline.append(line[2:-1])
+	# firstline.append(line[2:-1])
+	return (newlines)
+
+def opNoIf(blocks):
+	global maxN
+	freeN = maxN + 1
+	exitN = freeN + len(blocks) - 1
+	newlines = []
+
+	if "GOTO" in blocks[-1]:
+		return (["IF" + ''.join(blocks)])
+	newlines.append("IF%sGOTO%d" % (blocks[0], freeN))
+	newlines.append("GOTO%d" % exitN)
+	newlines.append("N%d" % freeN)
+	newlines.append(blocks[-1])
+	newlines.append("N%d" % exitN)
+	# print("BLOCK:", blocks)
 	return (newlines)
 
 def opAndIf(blocks):
@@ -167,21 +190,23 @@ def opAndIf(blocks):
 		newlines.append("GOTO%d" % exitN)
 		newlines.append("N%d" % freeN)
 		freeN += 1
+	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
 	# print("AND: ", newlines)
 	maxN = freeN
 	return (newlines)
-	
+
 def opOrIf(blocks):
 	global maxN
 	freeN = maxN + 1
 	newlines = []
-	
+
 	exitN = freeN + 1
 	for block in blocks[:-1]:
 		newlines.append("IF%sGOTO%d" % (block, freeN))
 	newlines.append("GOTO%d" % exitN)
 	newlines.append("N%d" % freeN)
+	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
 	# print("OR: ",newlines)
 	maxN = freeN
