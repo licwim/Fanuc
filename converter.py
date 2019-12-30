@@ -15,18 +15,17 @@ def converter(lines):
 	# print(maxvar, maxN)
 	for line in buflines:
 		# print('NEW LINE: %s' % line)
-		print('LINE: %d' % i)
+		# print('LINE: %d' % i)
 		templines = convertLine1(line)
 		lines = []
 		for line in templines:
 			line = line.strip(' \n')
 			if line:
-				print(type(line), line)
 				line = convertLine2(line)
+				# print(type(line), line)
 				lines += [line]
 		newlines.extend(lines)
 		i += 1
-
 	return (newlines)
 
 def convertLine1(line):
@@ -42,11 +41,13 @@ def convertLine2(line):
 		newline = line.partition('(')
 		return ('\n'.join([newline[0], ';' + newline[1] + newline[2]]))
 	elif re.match(r"N\d+", line): return ('"%s"' % line)
-	elif line.startswith("GOTO"): return ('BNC,"N%s"' % line.replace(' ', '')[4:])
+	elif line.startswith("GOTO"): return ('(BNC,"N%s")' % line.replace(' ', '')[4:])
 	elif line.startswith("IF"):
 		block = re.search(r"\[[^\[\]]*\]", line).group(0)
 		print("BLOCK: %s" % block)
+		print(re.findall(r"\d", block))
 		return (line)
+	else: return (line)
 
 
 def checkN(line):

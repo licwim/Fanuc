@@ -1,6 +1,6 @@
 import sys
 import os
-import glob
+import winreg
 from PyQt5 import QtWidgets
 
 from design import Ui_MainWindow
@@ -14,7 +14,10 @@ dst = ''
 class mywindow(QtWidgets.QMainWindow):
 	filetype = "file"
 	filelist = []
-	savepath = os.getcwd() + "\\Converted_NC_files"
+	key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", 0, winreg.KEY_ALL_ACCESS)
+	docpath = winreg.QueryValueEx(key, "Personal")[0]
+	savepath = docpath + "\\F2NC Files"
+	# savepath = os.getcwd() + "\\Converted_NC_files"
 
 	msgPathNotFound = ''
 	msgConvertError = ''
@@ -26,14 +29,14 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.setupUi(self)
 		self.ui.textOld.setText(src)
 		self.ui.textNew.setText(dst)
-		self.ui.lineOpen.setText(os.getcwd())
+		self.ui.lineOpen.setText(mywindow.docpath)
 		self.ui.lineSave.setText(mywindow.savepath)
 		self.ui.btnConvert.clicked.connect(self.clickConvert)
 		self.ui.btnBrowseOpenFile.clicked.connect(self.clickBrowseOpenFile)
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
-		mywindow.filelist = self.findFilelist(os.getcwd())
+		# mywindow.filelist = self.findFilelist(os.getcwd())
 		self.msgBoxes()
 
 
