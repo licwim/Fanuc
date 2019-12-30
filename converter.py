@@ -11,21 +11,13 @@ def converter(lines):
 		line = convertNum(line)
 		checkN(line)
 		line = checkComments(line)
-		# line = line.strip(' ')
 		buflines.extend(line)
 	# print(maxvar, maxN)
 	for line in buflines:
 		# print('NEW LINE: %s' % line)
 		print('LINE: %d' % i)
-		templines = convertLine1(line)
-		lines = []
-		for line in templines:
-			line = line.strip(' \n')
-			if line:
-				# print(line)
-				line = convertLine2(line)
-				# print(type(line), line)
-				lines += [line]
+		lines = convertLine1(line)
+		lines = convertLines(lines)
 		newlines.extend(lines)
 		i += 1
 	return (newlines)
@@ -35,13 +27,12 @@ def convertLines(lines):
 	for line in lines:
 		line = line.strip(' \n')
 		if line:
-			# print(line)
 			line = convertLine2(line)
-			# print(type(line), line)
-			lines += [line]
+			newlines += [line]
+	return (newlines)
 
 def checkComments(line):
-	line = line.strip(' ')
+	lines = [line.strip(' ')]
 	if '(' in line and ')' in line:
 		newline = line.partition('(')
 		lines = [newline[0], ';' + newline[1] + newline[2]]
