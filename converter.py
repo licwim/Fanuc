@@ -87,9 +87,10 @@ def convertCoords(line):
 	secondline = []
 
 	buflines = re.findall(r"[XYZ][^XYZ]*",line)
+	print("BUFF: %s" % buflines)
 	for line in buflines:
 		coordline = CoordLine()
-		if '[' in line:
+		if '[' in line or '-#' in line:
 			coordline.convertOneCoord(line)
 			firstline.append(coordline.firstline)
 			secondline.append(coordline.secondline)
@@ -97,7 +98,7 @@ def convertCoords(line):
 		else:
 			secondline.append(line)
 	secondline = [' '.join(secondline)]
-	print(firstline + secondline)
+	# print(firstline + secondline)
 	return (firstline + secondline)
 
 class CoordLine:
@@ -112,9 +113,14 @@ class CoordLine:
 		maxvar += 1
 		freevar = maxvar
 
-		firstline.append(''.join(['#', str(freevar), '=']))
-		firstline.append(line[2:-1])
-		secondline.append(''.join([line[0], '#', str(freevar)]))
+		line = line.replace(' ', '')
+		firstline.append("#%d=" % freevar)
+		if line[1] == '-':
+			firstline.append(line[1:])
+		else:
+			firstline.append(line[2:-1])
+		# print("FL: %s" % firstline)
+		secondline.append("%s#%d" % (line[0], freevar))
 		CoordLine.firstline = ''.join(firstline)
 		CoordLine.secondline = ''.join(secondline)
 		# print(firstline, secondline)
@@ -124,7 +130,7 @@ def convertIf(line):
 	else: search = "GOTO"
 	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.rindex(search)])
 	blocks.append(line[line.index(search) + 4:])
-	print(blocks)
+	# print(blocks)
 	if "OR" in line: newlines = opOrIf(blocks)
 	else: newlines = opAndIf(blocks)
 	newlines.insert(-1, blocks[-1])
@@ -177,5 +183,5 @@ def convertFup(line):
 	newlines.extend(["GOTO%d" % (freeN + 1), "N%d" % freeN])
 	newlines.append("#%d=#%d+1" % (freevar, freevar + 1))
 	newlines.extend(["N%d" % (freeN + 1), "%s=#%d" % (var, freevar)])
-	print(newlines)
+	# print(newlines)
 	return (newlines)

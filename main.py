@@ -6,13 +6,13 @@ from PyQt5 import QtWidgets
 from design import Ui_MainWindow
 from converter import converter
 
-with open('tests/test.nc') as file:
-	text = file.read()
-src = text
+# with open('tests/test.nc') as file:
+	# text = file.read()
+src = '' # text
 dst = ''
 
 class mywindow(QtWidgets.QMainWindow):
-	filetype = "file"
+	filetype = "list"
 	filelist = []
 	savepath = os.getcwd() + "\\Converted_NC_files"
 
@@ -24,12 +24,12 @@ class mywindow(QtWidgets.QMainWindow):
 		super(mywindow, self).__init__()
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
-		self.ui.textOld.setText(src)
+		# self.ui.textOld.setText(src)
 		self.ui.textNew.setText(dst)
 		self.ui.lineOpen.setText(os.getcwd())
 		self.ui.lineSave.setText(mywindow.savepath)
 		self.ui.btnConvert.clicked.connect(self.clickConvert)
-		self.ui.btnBrowseOpenFile.clicked.connect(self.clickBrowseOpenFile)
+		# self.ui.btnBrowseOpenFile.clicked.connect(self.clickBrowseOpenFile)
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
@@ -120,7 +120,7 @@ class mywindow(QtWidgets.QMainWindow):
 			file.close()
 			mywindow.filetype = "file"
 		elif os.path.isdir(path):
-			self.ui.textOld.clear()
+			# self.ui.textOld.clear()
 			mywindow.filelist = self.findFilelist(path)
 			mywindow.filetype = "list"
 		else:
@@ -154,4 +154,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-input("Press Enter")
