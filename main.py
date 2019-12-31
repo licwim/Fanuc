@@ -89,7 +89,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 
 	def openFile(self, filename):
-		print("\t\t%s" % filename)
+		print("\t%s" % filename)
 		if not os.access(filename, os.R_OK):
 			mywindow.msgPathNotFound.exec()
 			return ()
