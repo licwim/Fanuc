@@ -45,3 +45,18 @@ def work_with_numbers(num):
 	if n != 999999 and n > maxnum:
 		maxnum = n
 	return (''.join(num))
+
+def convertIf(line):
+	if "THEN" in line: search = "THEN"
+	else: search = "GOTO"
+	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.rindex(search)])
+	if search == "THEN": blocks.append(line[line.index(search) + 4:])
+	else: blocks.append(line[line.index(search):])
+	if "OR" in line: newlines = opOrIf(blocks)
+	elif "AND" in line: newlines = opAndIf(blocks)
+	else: newlines = opNoIf(blocks)
+	# print(blocks)
+	# print(re.findall(r"\[.*\]", line[:line.rindex(search)]))
+	# if re.search(r"[[", line):
+	# firstline.append(line[2:-1])
+	return (newlines)

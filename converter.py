@@ -35,7 +35,7 @@ def convertLines(lines):
 	for line in lines:
 		line = line.strip(' \n')
 		if line:
-			# line = convertLine2(line)
+			line = convertLine2(line)
 			newlines += [line]
 	return (newlines)
 
@@ -49,10 +49,13 @@ def checkComments(line):
 	return (lines)
 
 def convertLine1(line):
-	newlines = [line]
-	if line.startswith('X') or line.startswith('Y') or line.startswith('Z'): newlines = convertCoords(line)
-	if line.startswith("IF") and '[' in line: newlines = convertIf(line)
-	if "FUP" in line: newlines = convertFup(line)
+	buflines = [line]
+	newlines = []
+	if line.startswith('X') or line.startswith('Y') or line.startswith('Z'): buflines = convertCoords(line)
+	if line.startswith("IF") and '[' in line: buflines = convertIf(line)
+	for line in buflines:
+		if "FUP" in line: newlines.extend(convertFup(line))
+		else: newlines.append(line)
 	return (newlines)
 
 def convertLine2(line):
@@ -63,10 +66,11 @@ def convertLine2(line):
 		N = re.search(r"\d+", line.replace(' ', '')[4:])[0]
 		line = '(BNC,"N%s")%s' % (N, line[line.index(N) + len(N):])
 	if line.startswith("IF"):
+		# print("LINE:",line)
 		N = line[line.index("GOTO") + 4:]
-		print("N: %s" % N)
-		block = re.search(r"\[[^\[\]]*\]", line)[0]
-		print("BLOCK: %s" % block)
+		# print("N: %s" % N)
+		block = re.search(r"\[.+\]", line[:line.index("GOTO")])[0]
+		# print("BLOCK: %s" % block)
 		op = re.search(r"[A-Z]+", block)[0]
 		var1 = block[1:block.index(op)]
 		var2 = block[block.index(op) + len(op):-1]
@@ -173,18 +177,22 @@ class CoordLine:
 		# print(firstline, secondline)
 
 def convertIf(line):
-	if "OR" in line: newlines = opOrIf(blocks)
-	elif "AND" in line: newlines = opAndIf(blocks)
+	blocks = []
+
+	if "AND" in line or "OR" in line:
+		if "AND" in line: tmp = line.split("AND")
+		else: tmp = line.split("OR")
+		blocks.append(re.findall(r"\[(.+)", tmp[0])[0])
+		blocks.append(''.join(re.findall(r"(.+)\].*THEN|(.+)\].*GOTO", tmp[1])[0]))
+	else: blocks.append(''.join(re.findall(r"(\[.+\]).*THEN|(\[.+\]).*GOTO", line)[0]))
+	print("BLOCKS:", blocks)
+	if "THEN" in line:
+		blocks.append(re.findall(r"THEN(.+)", line)[0])
+		print("\t\t\t\tTHEN:", re.findall(r"THEN(.+)", line)[0])
+	else: blocks.append(re.findall(r"GOTO.+", line)[0])
+	if "AND" in line: newlines = opAndIf(blocks)
+	elif "OR" in line: newlines = opOrIf(blocks)
 	else: newlines = opNoIf(blocks)
-	if "THEN" in line: search = "THEN"
-	else: search = "GOTO"
-	blocks = re.findall(r"\[[^\[\]]*\]", line[:line.rindex(search)])
-	if search == "THEN": blocks.append(line[line.index(search) + 4:])
-	else: blocks.append(line[line.index(search):])
-	# print(blocks)
-	print(re.findall(r"\[.*\]", line[:line.rindex(search)]))
-	# if re.search(r"[[", line):
-	# firstline.append(line[2:-1])
 	return (newlines)
 
 def opNoIf(blocks):
@@ -203,14 +211,11 @@ def opNoIf(blocks):
 	# print("BLOCK:", blocks)
 	return (newlines)
 
-def opAndIf(line):
+def opAndIf(blocks):
 	global maxN
 	freeN = maxN + 1
 	newlines = []
-	blocks = []
 
-	line = line.partition("AND")
-	blocks[0] = re.search(r"", line[0])
 	exitN = freeN + len(blocks) - 1
 	for block in blocks[:-1]:
 		newlines.append("IF%sGOTO%d" % (block, freeN))
