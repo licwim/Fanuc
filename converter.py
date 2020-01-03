@@ -35,7 +35,7 @@ def convertLines(lines):
 	for line in lines:
 		line = line.strip(' \n')
 		if line:
-			line = convertLine2(line)
+			# line = convertLine2(line)
 			newlines += [line]
 	return (newlines)
 
@@ -120,11 +120,11 @@ def work_with_numbers(num):
 
 	num.clear()
 	num.append('#')
-	if n > 99:
-		n -= 40
+	# if n > 99:
+		# n -= 40
 	# elif n > 0 and n < 27:
 		# n += 30
-	elif n == 0:
+	if n == 0:
 		n = 999999
 		num.pop()
 	num.append(str(n))
@@ -152,7 +152,6 @@ def convertCoords(line):
 	return (firstline + secondline)
 
 class CoordLine:
-
 	firstline = "1"
 	secondline = "2"
 
@@ -208,6 +207,7 @@ def opNoIf(blocks):
 	newlines.append("N%d" % freeN)
 	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
+	maxN = exitN
 	# print("BLOCK:", blocks)
 	return (newlines)
 
@@ -225,7 +225,7 @@ def opAndIf(blocks):
 	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
 	# print("AND: ", newlines)
-	maxN = freeN
+	maxN = exitN
 	return (newlines)
 
 def opOrIf(blocks):
@@ -241,7 +241,7 @@ def opOrIf(blocks):
 	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
 	# print("OR: ",newlines)
-	maxN = freeN
+	maxN = exitN
 	return (newlines)
 
 def convertFup(line):
@@ -249,6 +249,7 @@ def convertFup(line):
 	global maxN
 	freevar = maxvar + 1
 	freeN = maxN + 1
+	exitN = freeN + 1
 	newlines = []
 	var = line[:line.index('=')]
 	math = line[line.index("FUP") + 4:-1]
@@ -258,5 +259,7 @@ def convertFup(line):
 	newlines.extend(["GOTO%d" % (freeN + 1), "N%d" % freeN])
 	newlines.append("#%d=#%d+1" % (freevar, freevar + 1))
 	newlines.extend(["N%d" % (freeN + 1), "%s=#%d" % (var, freevar)])
+	maxN = exitN
+	maxvar = freevar + 1
 	# print(newlines)
 	return (newlines)
