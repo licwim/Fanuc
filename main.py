@@ -16,6 +16,8 @@ class mywindow(QtWidgets.QMainWindow):
 	filelist = []
 	key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", 0, winreg.KEY_ALL_ACCESS)
 	docpath = winreg.QueryValueEx(key, "Personal")[0]
+	print(docpath)
+	if "%USERPROFILE%" in docpath: docpath = docpath.replace("%USERPROFILE%", os.environ["USERPROFILE"])
 	savepath = docpath + "\\F2NC Files"
 	# savepath = os.getcwd() + "\\Converted_NC_files"
 
