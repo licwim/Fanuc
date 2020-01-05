@@ -1,3 +1,20 @@
+# ************************************************* #
+#                                                   #
+#    ───╔═╗──╔══╗╔══╗╔═╗╔═╗╔═╗╔══╗╔═╗─────╔═╗───    #
+#    ───║ ║──╚╗╔╝║╔═╝║ ║║ ║║ ║╚╗╔╝║ ║─────║ ║───    #
+#    ───║ ║───║║─║║──║ ║║ ║║ ║─║║─║ ╚═╗ ╔═╝ ║───    #
+#    ───║ ║───║║─║║──║ ║║ ║║ ║─║║─║ ╔═╗ ╔═╗ ║───    #
+#    ───║ ╚═╗╔╝╚╗║╚═╗║ ╚╝ ╚╝ ║╔╝╚╗║ ║ ╚═╝ ║ ║───    #
+#    ───╚═══╝╚══╝╚══╝╚══╝ ╚══╝╚══╝╚═╝─────╚═╝───    #
+#                                                   #
+#   main.py                                         #
+#       By: licwim                                  #
+#                                                   #
+#   Created: 05-01-2020 18:23:20 by licwim          #
+#   Updated: 05-01-2020 19:59:31 by licwim          #
+#                                                   #
+# ************************************************* #
+
 import sys
 import os
 import winreg
@@ -29,74 +46,84 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.setupUi(self)
 		self.ui.textOld.setText(src)
 		self.ui.textNew.setText(dst)
-		self.ui.lineOpen.setText(mywindow.docpath)
-		self.ui.lineSave.setText(mywindow.savepath)
-		self.ui.btnConvert.clicked.connect(self.clickConvert)
+		self.ui.lineOpen.setText(self.docpath)
+		self.ui.lineSave.setText(self.savepath)
+		self.ui.btnConvert1.clicked.connect(self.clickConvert1)
+		self.ui.btnConvert2.clicked.connect(self.clickConvert2)
+		self.ui.btnConvert12.clicked.connect(self.clickConvert12)
 		self.ui.btnBrowseOpenFile.clicked.connect(self.clickBrowseOpenFile)
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
-		# mywindow.filelist = self.findFilelist(os.getcwd())
+		# self.filelist = self.findFilelist(os.getcwd())
 		self.msgBoxes()
 
 
 	def msgBoxes(self):
-		mywindow.msgPathNotFound = QtWidgets.QMessageBox()
-		mywindow.msgConvertError = QtWidgets.QMessageBox()
-		mywindow.msgConvertDone = QtWidgets.QMessageBox()
+		self.msgPathNotFound = QtWidgets.QMessageBox()
+		self.msgConvertError = QtWidgets.QMessageBox()
+		self.msgConvertDone = QtWidgets.QMessageBox()
 
-		mywindow.msgPathNotFound.setWindowTitle("Error:")
-		mywindow.msgPathNotFound.setText("This path is not found.")
-		mywindow.msgPathNotFound.setIcon(QtWidgets.QMessageBox.Critical)
-		mywindow.msgPathNotFound.setStandardButtons(QtWidgets.QMessageBox.Ok)
+		self.msgPathNotFound.setWindowTitle("Error:")
+		self.msgPathNotFound.setText("This path is not found.")
+		self.msgPathNotFound.setIcon(QtWidgets.QMessageBox.Critical)
+		self.msgPathNotFound.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
-		mywindow.msgConvertError.setWindowTitle("Error:")
-		mywindow.msgConvertError.setText("Convert error!")
-		mywindow.msgConvertError.setIcon(QtWidgets.QMessageBox.Warning)
-		mywindow.msgConvertError.setStandardButtons(QtWidgets.QMessageBox.Ok)
+		self.msgConvertError.setWindowTitle("Error:")
+		self.msgConvertError.setText("Convert error!")
+		self.msgConvertError.setIcon(QtWidgets.QMessageBox.Warning)
+		self.msgConvertError.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
-		mywindow.msgConvertDone.setWindowTitle("Succes")
-		mywindow.msgConvertDone.setText("Convert is done.")
-		mywindow.msgConvertDone.setIcon(QtWidgets.QMessageBox.Information)
-		mywindow.msgConvertDone.setStandardButtons(QtWidgets.QMessageBox.Ok)
+		self.msgConvertDone.setWindowTitle("Succes")
+		self.msgConvertDone.setText("Convert is done.")
+		self.msgConvertDone.setIcon(QtWidgets.QMessageBox.Information)
+		self.msgConvertDone.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
 
 
-	def clickConvert(self):
-		savepath = mywindow.savepath
+	def clickConvert1(self):
+		self.clickConvert(1)
 
-		if not os.path.exists(mywindow.savepath):
-			os.mkdir(mywindow.savepath)
+	def clickConvert2(self):
+		self.clickConvert(2)
 
-		if mywindow.filetype == "file":
+	def clickConvert12(self):
+		self.clickConvert(12)
+
+	def clickConvert(self, step):
+		savepath = self.savepath
+
+		if not os.path.exists(self.savepath):
+			os.mkdir(self.savepath)
+
+		if self.filetype == "file":
 			text = self.ui.textOld.toPlainText()
 			lines = text.split('\n')
 			# print(lines)
-			lines = converter(lines)
+			lines = converter(lines, step)
 			fulltext = '\n'.join(lines)
 			self.ui.textNew.setText(fulltext)
 			# line = converter(oldfile)
-		elif mywindow.filetype == "list":
-			filelist = mywindow.filelist
+		elif self.filetype == "list":
+			filelist = self.filelist
 			for file in filelist:
-				lines = converter(self.openFile(file))
+				lines = converter(self.openFile(file), step)
 				# print(lines)
 				if not lines: break
 				newfile = open("%s/[F2NC] %s" % (savepath, os.path.basename(file)), "w")
 				newfile.write('\n'.join(lines))
 				newfile.close()
-			if lines: mywindow.msgConvertDone.exec()
-		else: mywindow.msgConvertError.exec()
+			if lines: self.msgConvertDone.exec()
+		else: self.msgConvertError.exec()
 
 
 	def openFile(self, filename):
 		print("\t\t", filename)
 		if not os.access(filename, os.R_OK):
-			mywindow.msgPathNotFound.exec()
+			self.msgPathNotFound.exec()
 			return ()
-		file = open(filename)
-		lines = file.readlines()
-		file.close()
+		with open(filename) as file:
+			lines = file.readlines()
 		return (lines)
 
 	def clickBrowseOpenFile(self):
@@ -118,18 +145,17 @@ class mywindow(QtWidgets.QMainWindow):
 		# print(path)
 		if os.path.isfile(path):
 			self.ui.textNew.clear()
-			file = open(path)
-			text = file.read()
+			with open(path) as file:
+				text = file.read()
 			self.ui.textOld.setText(text)
-			file.close()
-			mywindow.filetype = "file"
+			self.filetype = "file"
 		elif os.path.isdir(path):
 			self.ui.textOld.clear()
-			mywindow.filelist = self.findFilelist(path)
-			mywindow.filetype = "list"
+			self.filelist = self.findFilelist(path)
+			self.filetype = "list"
 		else:
-			mywindow.filetype = "err"
-			mywindow.msgPathNotFound.exec()
+			self.filetype = "err"
+			self.msgPathNotFound.exec()
 
 	def findFilelist(self, path):
 		os.chdir(path)
@@ -146,7 +172,7 @@ class mywindow(QtWidgets.QMainWindow):
 		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder")
 		if not path:
 			return (1)
-		mywindow.savepath = path
+		self.savepath = path
 		self.ui.lineSave.setText(path)
 
 

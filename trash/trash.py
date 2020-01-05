@@ -60,3 +60,13 @@ def convertIf(line):
 	# if re.search(r"[[", line):
 	# firstline.append(line[2:-1])
 	return (newlines)
+
+	def findTempvar():
+	global lockvar
+	global tempvar
+
+	print(lockvar)
+	for n in range(1, 255):
+		if not n in lockvar and not n in tempvar: tempvar.append(n)
+		if len(tempvar) > 4: break
+	print(tempvar)

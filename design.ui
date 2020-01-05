@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>581</width>
-    <height>628</height>
+    <width>580</width>
+    <height>630</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,6 +18,9 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_3">
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <layout class="QGridLayout" name="gridLayout">
       <item row="3" column="0">
@@ -234,7 +237,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="btnConvert">
+       <widget class="QPushButton" name="btnConvert1">
         <property name="maximumSize">
          <size>
           <width>200</width>
@@ -245,7 +248,43 @@
          <string notr="true">background-color: rgb(182, 182, 182);</string>
         </property>
         <property name="text">
-         <string>Convert</string>
+         <string>Step 1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnConvert2">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(182, 182, 182);</string>
+        </property>
+        <property name="text">
+         <string>Step 2</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QPushButton" name="btnConvert12">
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(182, 182, 182);</string>
+        </property>
+        <property name="text">
+         <string>Step 1 + Step 2</string>
         </property>
        </widget>
       </item>

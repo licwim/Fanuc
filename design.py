@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'design.ui'
+# Form implementation generated from reading ui file '.\design.ui'
 #
-# Created by: PyQt5 UI code generator 5.14.0
+# Created by: PyQt5 UI code generator 5.12
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -13,11 +12,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(581, 628)
+        MainWindow.resize(580, 630)
         MainWindow.setStyleSheet("background-color: rgb(170, 170, 127);")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_3.setContentsMargins(-1, -1, -1, 0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
@@ -122,12 +122,25 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addLayout(self.horizontalLayout)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.btnConvert = QtWidgets.QPushButton(self.centralwidget)
-        self.btnConvert.setMaximumSize(QtCore.QSize(200, 23))
-        self.btnConvert.setStyleSheet("background-color: rgb(182, 182, 182);")
-        self.btnConvert.setObjectName("btnConvert")
-        self.horizontalLayout_2.addWidget(self.btnConvert)
+        self.btnConvert1 = QtWidgets.QPushButton(self.centralwidget)
+        self.btnConvert1.setMaximumSize(QtCore.QSize(200, 23))
+        self.btnConvert1.setStyleSheet("background-color: rgb(182, 182, 182);")
+        self.btnConvert1.setObjectName("btnConvert1")
+        self.horizontalLayout_2.addWidget(self.btnConvert1)
+        self.btnConvert2 = QtWidgets.QPushButton(self.centralwidget)
+        self.btnConvert2.setMaximumSize(QtCore.QSize(200, 23))
+        self.btnConvert2.setStyleSheet("background-color: rgb(182, 182, 182);")
+        self.btnConvert2.setObjectName("btnConvert2")
+        self.horizontalLayout_2.addWidget(self.btnConvert2)
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.btnConvert12 = QtWidgets.QPushButton(self.centralwidget)
+        self.btnConvert12.setMaximumSize(QtCore.QSize(250, 23))
+        self.btnConvert12.setStyleSheet("background-color: rgb(182, 182, 182);")
+        self.btnConvert12.setObjectName("btnConvert12")
+        self.horizontalLayout_3.addWidget(self.btnConvert12)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -146,4 +159,8 @@ class Ui_MainWindow(object):
         self.btnBrowseSave.setText(_translate("MainWindow", "Select folder"))
         self.label_4.setText(_translate("MainWindow", "INPUT"))
         self.label_3.setText(_translate("MainWindow", "OUTPUT"))
-        self.btnConvert.setText(_translate("MainWindow", "Convert"))
+        self.btnConvert1.setText(_translate("MainWindow", "Step 1"))
+        self.btnConvert2.setText(_translate("MainWindow", "Step 2"))
+        self.btnConvert12.setText(_translate("MainWindow", "Step 1 + Step 2"))
+
+
