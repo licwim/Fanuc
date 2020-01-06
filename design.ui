@@ -149,7 +149,7 @@ color: rgb(0, 0, 0);</string>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="btnConvert">
+       <widget class="QPushButton" name="btnConvert1">
         <property name="maximumSize">
          <size>
           <width>200</width>
@@ -161,7 +161,45 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Convert</string>
+         <string>Convert - Step 1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnConvert2">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(182, 182, 182);
+color: rgb(0, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string>Convert - Step 2</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QPushButton" name="btnConvert12">
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(182, 182, 182);
+color: rgb(0, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string>Convert - Step 1 + Step 2</string>
         </property>
        </widget>
       </item>
