@@ -124,6 +124,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 	def	clickBrowseOpenFoder(self):
 		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder or files", self.docpath)
+		path = path.replace('/', '\\')
 		print(path)
 		if not path:
 			return (1)
@@ -158,6 +159,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 	def clickBrowseSaveFolder(self):
 		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder")
+		path = path.replace('/', '\\')
 		if not path:
 			return (1)
 		self.savepath = path

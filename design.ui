@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Fanuc to NC Converter</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="design.qrc">
+    <normaloff>:/icon/f2nc.ico</normaloff>:/icon/f2nc.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(216, 216, 216);</string>
   </property>
@@ -209,6 +213,8 @@ color: rgb(0, 0, 0);</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="design.qrc"/>
+ </resources>
  <connections/>
 </ui>
