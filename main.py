@@ -139,7 +139,13 @@ class mywindow(QtWidgets.QMainWindow):
 			return (1)
 		self.ui.lineOpen.setText(path)
 		self.openFromLine()
-	
+
+	def openPath(self, paths = 0):
+		if paths == 0: paths = (self.ui.lineOpen.text())
+		self.filelist.clear()
+		for path in paths:
+			self.openFromLine(path)
+
 	def openFromLine(self):
 		path = self.ui.lineOpen.text()
 		# print(path)
