@@ -80,6 +80,7 @@ def clearSpace(lines):
 		line = line.strip(' \n')
 		if line:
 			# line = convertLine2(line)
+			line = line.replace("INT", "FIX")
 			newlines += [line]
 	return (newlines)
 
@@ -113,6 +114,7 @@ def convertLine1(line):
 	buflines = [line]
 	newlines = []
 	varlist = list(tempvars)
+	line = line.replace("FIX", "INT")
 	if re.search(r"[XYZ][\[#]", line.replace(' ', '')): buflines = convertCoords(line, varlist)
 	if line.startswith("IF") and '[' in line: buflines = convertIf(line, varlist)
 	for line in buflines:
