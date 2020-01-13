@@ -10,13 +10,14 @@
 #   main.py                                         #
 #       By: licwim                                  #
 #                                                   #
-#   Created: 05-01-2020 18:23:20 by licwim          #
-#   Updated: 05-01-2020 19:59:31 by licwim          #
+#   Created: 06-01-2020 16:34:56 by licwim          #
+#   Updated: 13-01-2020 02:08:32 by licwim          #
 #                                                   #
 # ************************************************* #
 
 import sys
 import os
+import re
 import winreg
 from PyQt5 import QtWidgets
 
@@ -33,6 +34,8 @@ class mywindow(QtWidgets.QMainWindow):
 	filelist = []
 	key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", 0, winreg.KEY_ALL_ACCESS)
 	docpath = winreg.QueryValueEx(key, "Personal")[0]
+	# print(docpath)
+	if "%USERPROFILE%" in docpath: docpath = docpath.replace("%USERPROFILE%", os.environ["USERPROFILE"])
 	savepath = docpath + "\\F2NC Files"
 	# savepath = os.getcwd() + "\\Converted_NC_files"
 
@@ -45,7 +48,6 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
 		self.ui.textOld.setText(src)
-		self.ui.textNew.setText(dst)
 		self.ui.lineOpen.setText(self.docpath)
 		self.ui.lineSave.setText(self.savepath)
 		self.ui.btnConvert1.clicked.connect(self.clickConvert1)
@@ -91,7 +93,6 @@ class mywindow(QtWidgets.QMainWindow):
 		self.clickConvert(12)
 
 	def clickConvert(self, step):
-		savepath = self.savepath
 
 		if not os.path.exists(self.savepath):
 			os.mkdir(self.savepath)
@@ -106,16 +107,35 @@ class mywindow(QtWidgets.QMainWindow):
 			# line = converter(oldfile)
 		elif self.filetype == "list":
 			filelist = self.filelist
+			lines = []
 			for file in filelist:
-				lines = converter(self.openFile(file), step)
+				try: lines = converter(self.openFile(file), step)
+				except: 
+					self.msgConvertError.exec()
+					break
 				# print(lines)
 				if not lines: break
-				newfile = open("%s/[F2NC] %s" % (savepath, os.path.basename(file)), "w")
+				newfile = open(self.newFilename(step, file), "w")
 				newfile.write('\n'.join(lines))
 				newfile.close()
 			if lines: self.msgConvertDone.exec()
 		else: self.msgConvertError.exec()
 
+	def newFilename(self, step, oldfile):
+		savepath = self.savepath
+		
+		if step == 12: step = 2
+		stepname = f"step {step}"
+		# basename = os.path.basename(file)
+		progpart = re.match(r"\[F2NC[\s_]*\(step[\s_]*\d\)\][\s_]*", oldfile)
+		if progpart:
+			progpart = progpart[0]
+			oldfile = oldfile.replace(progpart, '')
+			progpart = progpart[::-1].replace(re.findall(r"step.*(\d)", progpart)[0], str(step), 1)[::-1]
+		else:
+			progpart = f"[F2NC ({stepname})] "
+		newfile = f"{savepath}\\{progpart}{oldfile}"
+		return (newfile)
 
 	def openFile(self, filename):
 		print("\t\t", filename)
@@ -131,24 +151,20 @@ class mywindow(QtWidgets.QMainWindow):
 		if not path:
 			return (1)
 		self.ui.lineOpen.setText(path)
-		self.openFromLine()
+		self.openFromLine(path)
 
 	def	clickBrowseOpenFoder(self):
 		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder")
 		if not path:
 			return (1)
 		self.ui.lineOpen.setText(path)
-		self.openFromLine()
+		self.openFromLine(path)
 
-	def openPath(self, paths = 0):
-		if paths == 0: paths = (self.ui.lineOpen.text())
-		self.filelist.clear()
-		for path in paths:
-			self.openFromLine(path)
-
-	def openFromLine(self):
-		path = self.ui.lineOpen.text()
+	def openFromLine(self, path = 0):
 		# print(path)
+		self.filelist.clear()
+		if path == 0: path = self.ui.lineOpen.text()
+		os.chdir(path)
 		if os.path.isfile(path):
 			self.ui.textNew.clear()
 			with open(path) as file:
@@ -157,14 +173,13 @@ class mywindow(QtWidgets.QMainWindow):
 			self.filetype = "file"
 		elif os.path.isdir(path):
 			self.ui.textOld.clear()
-			self.filelist = self.findFilelist(path)
+			self.filelist += self.findFilelist(path)
 			self.filetype = "list"
 		else:
 			self.filetype = "err"
 			self.msgPathNotFound.exec()
 
 	def findFilelist(self, path):
-		os.chdir(path)
 		files = os.listdir(path)
 		filelist = []
 		# print (files)
@@ -176,6 +191,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 	def clickBrowseSaveFolder(self):
 		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder")
+		path = path.replace('/', '\\')
 		if not path:
 			return (1)
 		self.savepath = path
@@ -190,4 +206,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-input("Press Enter")
