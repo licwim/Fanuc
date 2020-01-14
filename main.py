@@ -27,7 +27,6 @@ from converter import converter
 with open('tests/test.nc') as file:
 	text = file.read()
 src = text
-dst = ''
 
 class mywindow(QtWidgets.QMainWindow):
 	filetype = "file"
@@ -109,10 +108,11 @@ class mywindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				try: lines = converter(self.openFile(file), step)
-				except: 
-					self.msgConvertError.exec()
-					break
+				lines = converter(self.openFile(file), step)
+				# try: lines = converter(self.openFile(file), step)
+				# except: 
+				# 	self.msgConvertError.exec()
+				# 	break
 				# print(lines)
 				if not lines: break
 				newfile = open(self.newFilename(step, file), "w")
@@ -127,7 +127,7 @@ class mywindow(QtWidgets.QMainWindow):
 		if step == 12: step = 2
 		stepname = f"step {step}"
 		# basename = os.path.basename(file)
-		progpart = re.match(r"\[F2NC[\s_]*\(step[\s_]*\d\)\][\s_]*", oldfile)
+		progpart = re.match(r"\[F2NC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
 		if progpart:
 			progpart = progpart[0]
 			oldfile = oldfile.replace(progpart, '')

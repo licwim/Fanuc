@@ -23,7 +23,7 @@ maxN = 0
 def converter(lines, step):
 	global maxN
 	global freevars
-	freevars = list(range(60,255))
+	freevars = list(range(60,256))
 	maxN = 0
 
 	if step == 1: newlines = convertStep1(lines)
@@ -37,14 +37,22 @@ def convertStep1(lines):
 	global freevars
 	newlines = []
 	buflines = []
+	lockvars = []
 
 	i = 1
 	for line in lines:
+		checkN(line)
+		checkNum(line, lockvars)
+	# print(f"FREEVARS: {freevars}")
+	# freevars += list(range(100, 256))
+	newvars = convertNums(lockvars)
+	for line in lines:
 		# print('NEW LINE: %s' % line)
 		# print('LINE: %d' % i)
-		line = convertNum(line)
-		checkN(line)
-		line = checkComments(line)
+		if i == 45:
+			print("TUTACHKI")
+		line = replaceNum(line, newvars)
+		line = splitComments(line)
 		line = clearSpace(line)
 		buflines.extend(line)
 		i += 1
@@ -80,15 +88,20 @@ def clearSpace(lines):
 		line = line.strip(' \n')
 		if line:
 			# line = convertLine2(line)
-			line = line.replace("INT", "FIX")
+			line = line.replace("opA", "IF")
+			line = line.replace("opB", "FIX")
+			line = line.replace("opC", "SIP")
+			line = line.replace("opD", "ROUND")
+			line = line.replace("opE", "SQRT")
+			line = line.replace("opF", "OR")
 			newlines += [line]
 	return (newlines)
 
 ##
-##			Checks comments and N
+##			Other
 ##
 
-def checkComments(line):
+def splitComments(line):
 	lines = [line]
 	if '(' in line and ')' in line:
 		newline = line.partition('(')
@@ -114,8 +127,13 @@ def convertLine1(line):
 	buflines = [line]
 	newlines = []
 	tempvars = list(freevars)
-	line = line.replace("FIX", "INT")
-	if re.search(r"[XYZ][\[#]", line.replace(' ', '')): buflines = convertCoords(line, tempvars)
+	line = line.replace("IF", "opA")
+	line = line.replace("FIX", "opB")
+	line = line.replace("SIP", "opC")
+	line = line.replace("ROUND", "opD")
+	line = line.replace("SQRT", "opE")
+	line = line.replace("OR", "opF")
+	if re.search(r"[A-Z][\[#]", line.replace(' ', '')): buflines = convertCoords(line, tempvars)
 	if line.startswith("IF") and '[' in line: buflines = convertIf(line, tempvars)
 	for line in buflines:
 		if "FUP" in line: newlines.extend(convertFup(line, tempvars))
@@ -146,51 +164,56 @@ def convertLine2(line):
 	line = line.replace('#', 'E')
 	return (line)
 
-
 ##
 ##			Numbers
 ##
 
-def convertNum(line):
-	newline = []
-	i = 0
-
-	if not re.search(r"#\d", line):
-		return (line)
-	while i < len(line):
-		j = i
-		i = line.find('#',j)
-		# print(i, line[i:])
-		if i < 0:
-			newline.append(line[j:])
-			break
-		newline.append(line[j:i])
-		i += 1
-		num = []
-		while i < len(line) and line[i].isdigit():
-			num.append(line[i])
-			i += 1
-		# print("NUM: ", num)
-		newline.append(work_with_numbers(num))
-	# print(''.join(newline))
-	return (''.join(newline))
-
-def work_with_numbers(num):
+def checkNum(line, lockvars):
 	global freevars
-	n = int(''.join(num))
 
-	num.clear()
-	num.append('#')
-	if n > 99:
+	nums = re.findall(r"#(\d+)", line)
+	nums = list(set(nums))
+	for num in nums:
+		num = int(num)
+		if num in range(100, 140) and num not in lockvars: lockvars.append(num)
+		elif num in range(60, 100) and num in freevars: freevars.remove(num)
+		elif num >= 140 and num - 40 in freevars: freevars.remove(num - 40)
+
+def convertNums(lockvars):
+	global freevars
+	newvars = dict()
+
+	lockvars.sort()
+	for num in lockvars:
+		newnum = opNum(num)
+		while newnum not in freevars:
+			newnum += 1
+		freevars.remove(newnum)
+		newvars.update({'#' + str(num): '#' + str(newnum)})
+	return (newvars)
+
+def replaceNum(line, newvars):
+
+	nums = re.findall(r"#\d+", line)
+	nums = list(set(nums))
+	for num in nums:
+		if num in newvars:
+			line = line.replace(num, newvars.get(num))
+		else:
+			if num == '#0': line = line.replace(num, "0.000001")
+			else: line = line.replace(num, f"#{opNum(num)}")
+	return (line)
+
+def opNum(n):
+	n = str(n)
+	if n[0] == '#': n = int(n[1:])
+	else: n = int(n)
+
+	if n >= 100:
 		n -= 40
-	elif n >= 1 and n <= 26:
+	elif n in range(1, 27):
 		n += 30
-	if n == 0:
-		n = 0.00001
-		num.pop()
-	if n in freevars: freevars.remove(n)
-	num.append(str(n))
-	return (''.join(num))
+	return (n)
 
 ##
 ##			Coords
@@ -198,9 +221,9 @@ def work_with_numbers(num):
 
 def convertCoords(line, tempvars):
 	firstline = []
-	secondline = [re.match(r"[^XYZ]*", line)[0]]
+	secondline = [re.match(r"[^A-Z]*", line)[0]]
 
-	buflines = re.findall(r"[XYZ][^XYZ]*", line)
+	buflines = re.findall(r"[A-Z][^A-Z]*", line)
 	# print("BUFF: %s" % buflines)
 	# print("TEMP:", tempvars)
 	for line in buflines:

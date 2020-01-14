@@ -6,23 +6,57 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
-    <height>630</height>
+    <width>596</width>
+    <height>553</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Fanuc to NC Converter</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="design.qrc">
+    <normaloff>:/icon/f2nc.ico</normaloff>:/icon/f2nc.ico</iconset>
+  </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(170, 170, 127);</string>
+   <string notr="true">background-color: rgb(216, 216, 216);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_3">
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
     <item>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(0, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string>Folder path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="btnBrowseOpenFolder">
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(182, 182, 182);
+color: rgb(0, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string>Select folder</string>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0">
        <widget class="QLineEdit" name="lineOpen">
         <property name="font">
@@ -41,68 +75,10 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: rgb(56, 56, 56);</string>
-        </property>
-        <property name="text">
-         <string>File or folder path:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="btnBrowseOpenFile">
-        <property name="maximumSize">
-         <size>
-          <width>70</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);</string>
-        </property>
-        <property name="locale">
-         <locale language="English" country="UnitedStates"/>
-        </property>
-        <property name="text">
-         <string>Select file</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QPushButton" name="btnBrowseOpenFolder">
-        <property name="maximumSize">
-         <size>
-          <width>70</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);</string>
-        </property>
-        <property name="text">
-         <string>Select folder</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="lineSave">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
         <property name="font">
@@ -112,7 +88,7 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(56, 56, 56);</string>
+         <string notr="true">color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
          <string>Save path:</string>
@@ -128,7 +104,8 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);</string>
+         <string notr="true">background-color: rgb(182, 182, 182);
+color: rgb(0, 0, 0);</string>
         </property>
         <property name="locale">
          <locale language="English" country="UnitedStates"/>
@@ -138,55 +115,17 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="lineSave">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QFrame" name="frame_2">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="locale">
-            <locale language="English" country="UnitedStates"/>
-           </property>
-           <property name="text">
-            <string>INPUT</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTextEdit" name="textOld">
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 255, 255);</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item>
        <widget class="QFrame" name="frame">
         <property name="styleSheet">
@@ -200,29 +139,6 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QLabel" name="label_3">
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="locale">
-            <locale language="English" country="UnitedStates"/>
-           </property>
-           <property name="text">
-            <string>OUTPUT</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QTextBrowser" name="textNew">
            <property name="styleSheet">
             <string notr="true">background-color: rgb(255, 255, 255);</string>
@@ -231,6 +147,133 @@
          </item>
         </layout>
        </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>10</number>
+      </property>
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>10</number>
+      </property>
+      <property name="bottomMargin">
+       <number>10</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,0,0">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="checkBox_8">
+          <property name="text">
+           <string>Преобразование локальных переменных +30</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_7">
+          <property name="text">
+           <string>Преобразование рабочих переменных -40</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_3">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_4">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="checkBox_10">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_9">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_6">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_2">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_5">
+          <property name="text">
+           <string>Больше функционала Богу функционала</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -245,10 +288,11 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);</string>
+         <string notr="true">background-color: rgb(182, 182, 182);
+color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Step 1</string>
+         <string>Convert - Step 1</string>
         </property>
        </widget>
       </item>
@@ -261,10 +305,11 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);</string>
+         <string notr="true">background-color: rgb(182, 182, 182);
+color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Step 2</string>
+         <string>Convert - Step 2</string>
         </property>
        </widget>
       </item>
@@ -281,10 +326,11 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);</string>
+         <string notr="true">background-color: rgb(182, 182, 182);
+color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Step 1 + Step 2</string>
+         <string>Convert - Step 1 + Step 2</string>
         </property>
        </widget>
       </item>
@@ -294,6 +340,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="design.qrc"/>
+ </resources>
  <connections/>
 </ui>
