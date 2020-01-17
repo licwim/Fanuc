@@ -117,7 +117,7 @@ class mywindow(QtWidgets.QMainWindow):
 		if step == 12: step = 2
 		stepname = f"step {step}"
 		# basename = os.path.basename(file)
-		progpart = re.match(r"\[F2NC[\s_]*\(step[\s_]*\d\)\][\s_]*", oldfile)
+		progpart = re.match(r"\[F2NC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
 		if progpart:
 			progpart = progpart[0]
 			oldfile = oldfile.replace(progpart, '')
@@ -130,7 +130,6 @@ class mywindow(QtWidgets.QMainWindow):
 	def openFile(self, filename):
 		print("\t\t", filename)
 		if not os.access(filename, os.R_OK):
-			print(os.access(filename, os.R_OK))
 			self.msgPathNotFound.exec()
 			return ()
 		with open(filename) as file:
