@@ -49,7 +49,7 @@ def convertStep1(lines):
 	for line in lines:
 		# print('NEW LINE: %s' % line)
 		# print('LINE: %d' % i)
-		if i == 45:
+		if i == -1:
 			print("TUTACHKI")
 		line = replaceNum(line, newvars)
 		line = splitComments(line)
@@ -88,12 +88,6 @@ def clearSpace(lines):
 		line = line.strip(' \n')
 		if line:
 			# line = convertLine2(line)
-			line = line.replace("opA", "IF")
-			line = line.replace("opB", "FIX")
-			line = line.replace("opC", "SIP")
-			line = line.replace("opD", "ROUND")
-			line = line.replace("opE", "SQRT")
-			line = line.replace("opF", "OR")
 			newlines += [line]
 	return (newlines)
 
@@ -127,14 +121,11 @@ def convertLine1(line):
 	buflines = [line]
 	newlines = []
 	tempvars = list(freevars)
-	line = line.replace("IF", "opA")
-	line = line.replace("FIX", "opB")
-	line = line.replace("SIP", "opC")
-	line = line.replace("ROUND", "opD")
-	line = line.replace("SQRT", "opE")
-	line = line.replace("OR", "opF")
-	if re.search(r"[A-Z][\[#]", line.replace(' ', '')): buflines = convertCoords(line, tempvars)
-	if line.startswith("IF") and '[' in line: buflines = convertIf(line, tempvars)
+	if '(' in line: return ([line])
+	if re.search(r"[^A-Z][A-Z][\[#]|^[A-Z][\[#]|[^A-Z][A-Z]-[\[#]|^[A-Z]-[\[#]", line.replace(' ', '')):
+		buflines = convertCoords(line, tempvars)
+	if line.startswith("IF") and '[' in line:
+		buflines = convertIf(line, tempvars)
 	for line in buflines:
 		if "FUP" in line: newlines.extend(convertFup(line, tempvars))
 		else: newlines.append(line)
@@ -221,47 +212,55 @@ def opNum(n):
 
 def convertCoords(line, tempvars):
 	firstline = []
-	secondline = [re.match(r"[^A-Z]*", line)[0]]
+	secondline = line
 
-	buflines = re.findall(r"[A-Z][^A-Z]*", line)
-	# print("BUFF: %s" % buflines)
+	bufcoords = findCoords(line)
+	# print("BUFF: %s" % bufcoords)
 	# print("TEMP:", tempvars)
-	for line in buflines:
-		onecoord = OneCoord()
-		if '[' in line or '-#' in line:
-			onecoord.convertOneCoord(line, tempvars)
-			firstline.append(onecoord.firstline)
-			secondline.append(onecoord.secondline)
-			# print(onecoord.firstline)
-		else:
-			secondline.append(line)
-	secondline = [' '.join(secondline)]
-	# print(firstline + secondline)
-	return (firstline + secondline)
+	for coord in bufcoords:
+		secondline = secondline.replace(coord, convertOneCoord(coord, tempvars, firstline))
+	# print(firstline + secondline, '\n')
+	return (firstline + [secondline])
 
-class OneCoord:
+def convertOneCoord(coord, tempvars, firstline):
+	freevar = tempvars.pop(0)
+	# print(tempvars)
 
-	firstline = "1"
-	secondline = "2"
+	if (coord[1] == '#'): return (coord)
+	firstline.append(f"#{freevar}={coord[1:]}")
+	return (f"{coord[0]}#{freevar}")
 
-	def convertOneCoord(self, line, tempvars):
-		firstline = []
-		secondline = []
-		freevar = tempvars.pop(0)
-		# print(tempvars)
+def findCoords(line):
+	bufcoords = []
 
-		line = line.replace(' ', '')
-		firstline.append("#%d=" % freevar)
-		if line[1] == '-':
-			firstline.append(line[1:])
-		else:
-			if line.count('[', 2) < line.count(']', 2): firstline.append(line[2:line.rindex(']')])
-			else: firstline.append(line[2:-1])
-		# print("FL: %s" % firstline)
-		secondline.append("%s#%d" % (line[0], freevar))
-		self.firstline = ''.join(firstline)
-		self.secondline = ''.join(secondline)
-		# print(firstline, secondline)
+	print(line)
+	line = '!' + line.replace(' ', '')
+	coords = re.findall(r"[^A-Z]([A-Z][#\[-])", line)
+	for coord in coords:
+		# print(coord, line)
+		line = line[line.index(coord):]
+		coord = findOneCoord(line)
+		bufcoords += [coord]
+		# print(coord)
+		line = line[len(coord):]
+	return (bufcoords)
+
+def findOneCoord(line, sign = 0):
+	op = line[1]
+
+	# print("IN", line)
+	if (op == '#'):
+		coord = re.findall(r"[A-Z]#\d+", line)[0]
+	elif (op == '['):
+		i = 2
+		while line.count('[', 0, i) != line.count(']', 0, i):
+			i += 1
+		coord = line[:i]
+	elif (op == '-'):
+		line = line.replace('-', '', 1)
+		coord = findOneCoord(line, 1)
+	if (sign == 1): return (coord[0] + '-' + coord[1:])
+	else: return (coord)
 
 ##
 ##			IF

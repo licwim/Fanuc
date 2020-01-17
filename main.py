@@ -24,7 +24,7 @@ from PyQt5 import QtWidgets
 from design import Ui_MainWindow
 from converter import converter
 
-with open('tests/test.nc') as file:
+with open('tests/test1.nc') as file:
 	text = file.read()
 src = text
 
@@ -164,7 +164,6 @@ class mywindow(QtWidgets.QMainWindow):
 		# print(path)
 		self.filelist.clear()
 		if path == 0: path = self.ui.lineOpen.text()
-		os.chdir(path)
 		if os.path.isfile(path):
 			self.ui.textNew.clear()
 			with open(path) as file:
@@ -172,6 +171,7 @@ class mywindow(QtWidgets.QMainWindow):
 			self.ui.textOld.setText(text)
 			self.filetype = "file"
 		elif os.path.isdir(path):
+			os.chdir(path)
 			self.ui.textOld.clear()
 			self.filelist += self.findFilelist(path)
 			self.filetype = "list"

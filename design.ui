@@ -14,7 +14,7 @@
    <string>Fanuc to NC Converter</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="design.qrc">
+   <iconset>
     <normaloff>:/icon/f2nc.ico</normaloff>:/icon/f2nc.ico</iconset>
   </property>
   <property name="styleSheet">
@@ -36,7 +36,7 @@
          <string notr="true">color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Folder path:</string>
+         <string>Путь папки с конвертируемыми файлами:</string>
         </property>
        </widget>
       </item>
@@ -53,7 +53,7 @@
 color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Select folder</string>
+         <string>Обзор...</string>
         </property>
        </widget>
       </item>
@@ -91,7 +91,7 @@ color: rgb(0, 0, 0);</string>
          <string notr="true">color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Save path:</string>
+         <string>Путь папки сохранения:</string>
         </property>
        </widget>
       </item>
@@ -111,7 +111,7 @@ color: rgb(0, 0, 0);</string>
          <locale language="English" country="UnitedStates"/>
         </property>
         <property name="text">
-         <string>Select folder</string>
+         <string>Обзор...</string>
         </property>
        </widget>
       </item>
@@ -292,7 +292,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Convert - Step 1</string>
+         <string>Конвертировать - Этап 1</string>
         </property>
        </widget>
       </item>
@@ -309,7 +309,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Convert - Step 2</string>
+         <string>Конвертировать - Этап 2</string>
         </property>
        </widget>
       </item>
@@ -330,7 +330,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Convert - Step 1 + Step 2</string>
+         <string>Конвертировать - Этап 1 + Этап 2</string>
         </property>
        </widget>
       </item>
