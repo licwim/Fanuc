@@ -37,7 +37,7 @@ class mywindow(QtWidgets.QMainWindow):
 	docpath = winreg.QueryValueEx(key, "Personal")[0]
 	# print(docpath)
 	if "%USERPROFILE%" in docpath: docpath = docpath.replace("%USERPROFILE%", os.environ["USERPROFILE"])
-	savepath = docpath + "\\F2NC Files"
+	savepath = docpath + "\\Fanuc Converter Files"
 	# savepath = os.getcwd() + "\\Converted_NC_files"
 
 	msgPathNotFound = ''
@@ -167,13 +167,13 @@ class mywindow(QtWidgets.QMainWindow):
 		if step == 12: step = 2
 		stepname = f"step {step}"
 		# basename = os.path.basename(file)
-		progpart = re.match(r"\[F2NC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
+		progpart = re.match(r"\[FC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
 		if progpart:
 			progpart = progpart[0]
 			oldfile = oldfile.replace(progpart, '')
 			progpart = progpart[::-1].replace(re.findall(r"step.*(\d)", progpart)[0], str(step), 1)[::-1]
 		else:
-			progpart = f"[F2NC ({stepname})] "
+			progpart = f"[FC ({stepname})] "
 		newfile = f"{savepath}\\{progpart}{oldfile}"
 		return (newfile)
 
