@@ -21,18 +21,6 @@ freevars = []
 maxN = 0
 flags = dict()
 
-# class cbFlags():
-# 	cbLocalVar = 1
-# 	cbWorkVar = 1
-# 	cbIf = 1
-# 	cbFup = 1
-
-# 	def initNewFlags(self, flags):
-# 		self.cbLocalVar = flags[0]
-# 		self.cbWorkVar = flags[1]
-# 		self.cbIf = flags[2]
-# 		self.cbFup = flags[3]
-
 def converter(lines, step, cbflags):
 	global maxN, freevars, flags
 
@@ -378,7 +366,6 @@ def partIf(block, newlines, tempvars):
 	newlines.append(f"#{freevar2}={block[2][:-1]}")
 	block = f"[#{freevar1}{compop}#{freevar2}]"
 	return (block)
-
 
 ##
 ##			FUP
