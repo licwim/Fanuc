@@ -10,15 +10,16 @@
 #   main.py                                         #
 #       By: licwim                                  #
 #                                                   #
-#   Created: 05-01-2020 18:23:20 by licwim          #
-#   Updated: 05-01-2020 19:59:31 by licwim          #
+#   Created: 06-01-2020 16:34:56 by licwim          #
+#   Updated: 13-01-2020 02:08:32 by licwim          #
 #                                                   #
 # ************************************************* #
 
 import sys
 import os
+import re
 import winreg
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from design import Ui_MainWindow
 from converter import converter
@@ -42,6 +43,8 @@ class mywindow(QtWidgets.QMainWindow):
 	msgConvertError = ''
 	msgConvertDone = ''
 
+	flags = [1, 1, 1, 1]
+
 	def __init__(self):
 		super(mywindow, self).__init__()
 		self.ui = Ui_MainWindow()
@@ -55,8 +58,11 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
+		self.ui.checkBoxLocalVar.stateChanged.connect(self.checkLocalVar)
+		self.ui.checkBoxWorkVar.stateChanged.connect(self.checkWorkVar)
+		self.ui.checkBoxIf.stateChanged.connect(self.checkIf)
+		self.ui.checkBoxFup.stateChanged.connect(self.checkFup)
 		self.msgBoxes()
-
 
 	def msgBoxes(self):
 		self.msgPathNotFound = QtWidgets.QMessageBox()
@@ -78,7 +84,21 @@ class mywindow(QtWidgets.QMainWindow):
 		self.msgConvertDone.setIcon(QtWidgets.QMessageBox.Information)
 		self.msgConvertDone.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
-
+	def checkLocalVar(self, state):
+		if state == QtCore.Qt.Checked: self.flags[0] = 1
+		else: self.flags[0] = 0
+	
+	def checkWorkVar(self, state):
+		if state == QtCore.Qt.Checked: self.flags[1] = 1
+		else: self.flags[1] = 0
+	
+	def checkIf(self, state):
+		if state == QtCore.Qt.Checked: self.flags[2] = 1
+		else: self.flags[2] = 0
+	
+	def checkFup(self, state):
+		if state == QtCore.Qt.Checked: self.flags[3] = 1
+		else: self.flags[3] = 0
 
 	def clickConvert1(self):
 		self.clickConvert(1)
@@ -90,7 +110,6 @@ class mywindow(QtWidgets.QMainWindow):
 		self.clickConvert(12)
 
 	def clickConvert(self, step):
-		savepath = self.savepath
 
 		if not os.path.exists(self.savepath):
 			os.mkdir(self.savepath)
@@ -99,23 +118,38 @@ class mywindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				try: lines = converter(self.openFile(file), step)
-				except: 
-					self.msgConvertError.exec()
-					break
+				lines = converter(self.openFile(file), step, self.flags)
+				# try: lines = converter(self.openFile(file), step)
+				# except: 
+				# 	self.msgConvertError.exec()
+				# 	break
 				# print(lines)
 				if not lines: break
-				newfile = open("%s/[F2NC] %s" % (savepath, os.path.basename(file)), "w")
+				newfile = open(self.newFilename(step, file), "w")
 				newfile.write('\n'.join(lines))
 				newfile.close()
 			if lines: self.msgConvertDone.exec()
 		else: self.msgConvertError.exec()
 
+	def newFilename(self, step, oldfile):
+		savepath = self.savepath
+		
+		if step == 12: step = 2
+		stepname = f"step {step}"
+		# basename = os.path.basename(file)
+		progpart = re.match(r"\[F2NC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
+		if progpart:
+			progpart = progpart[0]
+			oldfile = oldfile.replace(progpart, '')
+			progpart = progpart[::-1].replace(re.findall(r"step.*(\d)", progpart)[0], str(step), 1)[::-1]
+		else:
+			progpart = f"[F2NC ({stepname})] "
+		newfile = f"{savepath}\\{progpart}{oldfile}"
+		return (newfile)
 
 	def openFile(self, filename):
 		print("\t\t", filename)
 		if not os.access(filename, os.R_OK):
-			print(os.access(filename, os.R_OK))
 			self.msgPathNotFound.exec()
 			return ()
 		with open(filename) as file:
@@ -135,6 +169,7 @@ class mywindow(QtWidgets.QMainWindow):
 		# print(path)
 		self.filelist.clear()
 		if path == 0: path = self.ui.lineOpen.text()
+		os.chdir(path)
 		if os.path.isfile(path):
 			# self.ui.textNew.clear()
 			self.filelist.append(path)
@@ -147,7 +182,6 @@ class mywindow(QtWidgets.QMainWindow):
 			self.msgPathNotFound.exec()
 
 	def findFilelist(self, path):
-		os.chdir(path)
 		files = os.listdir(path)
 		filelist = []
 		# print (files)
