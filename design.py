@@ -14,7 +14,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(334, 508)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("fc.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/icon/fc.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("background-color: rgb(216, 216, 216);")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
