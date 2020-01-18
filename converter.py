@@ -19,13 +19,33 @@ import re
 
 freevars = []
 maxN = 0
+flags = dict()
 
-def converter(lines, step):
-	global maxN
-	global freevars
+# class cbFlags():
+# 	cbLocalVar = 1
+# 	cbWorkVar = 1
+# 	cbIf = 1
+# 	cbFup = 1
+
+# 	def initNewFlags(self, flags):
+# 		self.cbLocalVar = flags[0]
+# 		self.cbWorkVar = flags[1]
+# 		self.cbIf = flags[2]
+# 		self.cbFup = flags[3]
+
+def converter(lines, step, cbflags):
+	global maxN, freevars, flags
+
 	freevars = list(range(60,256))
 	maxN = 0
-
+	print(cbflags)
+	flags = {
+		"cbLocalVar" : cbflags[0],
+		"cbWorkVar" : cbflags[1],
+		"cbIf" : cbflags[2],
+		"cbFup" : cbflags[3]
+	}
+	print(flags)
 	if step == 1: newlines = convertStep1(lines)
 	elif step == 2: newlines = convertStep2(lines)
 	else: newlines = convertStep2(convertStep1(lines))
@@ -54,6 +74,7 @@ def convertStep1(lines):
 		buflines.extend(line)
 		i += 1
 	i = 1
+	freevars.sort()
 	freevars = tuple(freevars[:10])
 	for line in buflines:
 		# print('NEW LINE: %s' % line)
@@ -114,28 +135,30 @@ def checkN(line):
 ##
 
 def convertLine1(line):
-	global freevars
+	global freevars, flags
 	buflines = [line]
 	newlines = []
 	tempvars = list(freevars)
 	if '(' in line: return ([line])
-	if re.search(r"[^A-Z][A-Z][\[#]|^[A-Z][\[#]|[^A-Z][A-Z]-[\[#]|^[A-Z]-[\[#]", line.replace(' ', '')):
+	if (re.search(r"[^A-Z][A-Z][\[#]|^[A-Z][\[#]|[^A-Z][A-Z]-[\[#]|^[A-Z]-[\[#]", line.replace(' ', '')) ):
 		buflines = convertCoords(line, tempvars)
-	if line.startswith("IF") and '[' in line:
+	if (flags.get("cbIf") and line.startswith("IF") and '[' in line):
 		buflines = convertIf(line, tempvars)
 	for line in buflines:
-		if "FUP" in line: newlines.extend(convertFup(line, tempvars))
+		if (flags.get("cbFup") and "FUP" in line): newlines.extend(convertFup(line, tempvars))
 		else: newlines.append(line)
 	return (newlines)
 
 def convertLine2(line):
+	global flags
+
 	if re.match(r"N\d+", line):
 		N = re.search(r"N\d+", line)[0]
 		line = '"%s"%s' % (N, line[line.index(N) + len(N):])
 	if line.startswith("GOTO"):
 		N = re.search(r"\d+", line.replace(' ', '')[4:])[0]
 		line = '(BNC,"N%s")%s' % (N, line[line.index(N) + len(N):])
-	if line.startswith("IF"):
+	if flags.get("cbIf") and line.startswith("IF"):
 		# print("LINE:",line)
 		N = line[line.index("GOTO") + 4:]
 		# print("N: %s" % N)
@@ -164,19 +187,22 @@ def checkNum(line, lockvars):
 	for num in nums:
 		num = int(num)
 		if num in range(100, 140) and num not in lockvars: lockvars.append(num)
-		elif num in range(60, 100) and num in freevars: freevars.remove(num)
-		elif num >= 140 and num - 40 in freevars: freevars.remove(num - 40)
+		if num in freevars: freevars.remove(num)
+		# elif num in range(60, 100) and num in freevars: freevars.remove(num)
+		# elif num >= 140 and num - 40 in freevars: freevars.remove(num - 40)
 
 def convertNums(lockvars):
-	global freevars
+	global freevars, flags
 	newvars = dict()
 
+	if (flags.get("cbWorkVar") == 0): return (newvars)
 	lockvars.sort()
 	for num in lockvars:
-		newnum = opNum(num)
+		newnum = num - 40
 		while newnum not in freevars:
 			newnum += 1
 		freevars.remove(newnum)
+		freevars.append(num)
 		newvars.update({'#' + str(num): '#' + str(newnum)})
 	return (newvars)
 
@@ -192,14 +218,17 @@ def replaceNum(line, newvars):
 			else: line = line.replace(num, f"#{opNum(num)}")
 	return (line)
 
-def opNum(n):
-	n = str(n)
-	if n[0] == '#': n = int(n[1:])
-	else: n = int(n)
+def opNum(num):
+	global freevars, flags
+	num = int(num[1:])
+	n = num
 
-	if n >= 100:
+	if (flags.get("cbWorkVar") and n >= 100):
 		n -= 40
-	elif n in range(1, 27):
+		if (n in freevars):
+			freevars.remove(n)
+			freevars.append(num)
+	elif (flags.get("cbLocalVar") and n in range(1, 27)):
 		n += 30
 	return (n)
 
@@ -230,7 +259,7 @@ def convertOneCoord(coord, tempvars, firstline):
 def findCoords(line):
 	bufcoords = []
 
-	print(line)
+	# print(line)
 	line = '!' + line.replace(' ', '')
 	coords = re.findall(r"[^A-Z]([A-Z][#\[-])", line)
 	for coord in coords:

@@ -1,20 +1,3 @@
-# ************************************************* #
-#                                                   #
-#    ───╔═╗──╔══╗╔══╗╔═╗╔═╗╔═╗╔══╗╔═╗─────╔═╗───    #
-#    ───║ ║──╚╗╔╝║╔═╝║ ║║ ║║ ║╚╗╔╝║ ║─────║ ║───    #
-#    ───║ ║───║║─║║──║ ║║ ║║ ║─║║─║ ╚═╗ ╔═╝ ║───    #
-#    ───║ ║───║║─║║──║ ║║ ║║ ║─║║─║ ╔═╗ ╔═╗ ║───    #
-#    ───║ ╚═╗╔╝╚╗║╚═╗║ ╚╝ ╚╝ ║╔╝╚╗║ ║ ╚═╝ ║ ║───    #
-#    ───╚═══╝╚══╝╚══╝╚══╝ ╚══╝╚══╝╚═╝─────╚═╝───    #
-#                                                   #
-#   design.py                                       #
-#       By: licwim                                  #
-#                                                   #
-#   Created: 06-01-2020 16:34:56 by licwim          #
-#   Updated: 12-01-2020 17:39:32 by licwim          #
-#                                                   #
-# ************************************************* #
-
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file '.\design.ui'
@@ -29,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(546, 628)
+        MainWindow.resize(596, 553)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/icon/f2nc.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -66,10 +49,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addLayout(self.gridLayout)
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.lineSave = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineSave.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.lineSave.setObjectName("lineSave")
-        self.gridLayout_2.addWidget(self.lineSave, 1, 0, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setPointSize(8)
@@ -85,6 +64,10 @@ class Ui_MainWindow(object):
         self.btnBrowseSave.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.btnBrowseSave.setObjectName("btnBrowseSave")
         self.gridLayout_2.addWidget(self.btnBrowseSave, 1, 1, 1, 1)
+        self.lineSave = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineSave.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.lineSave.setObjectName("lineSave")
+        self.gridLayout_2.addWidget(self.lineSave, 1, 0, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout_2)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -99,32 +82,68 @@ class Ui_MainWindow(object):
         self.textNew.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.textNew.setObjectName("textNew")
         self.verticalLayout.addWidget(self.textNew)
-        self.horizontalLayout.addWidget(self.frame)
-        self.verticalLayout_3.addLayout(self.horizontalLayout)
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.btnConvert1 = QtWidgets.QPushButton(self.centralwidget)
-        self.btnConvert1.setMaximumSize(QtCore.QSize(200, 23))
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setContentsMargins(0, 0, 10, 0)
+        self.horizontalLayout_6.setSpacing(0)
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setContentsMargins(10, 10, 10, 10)
+        self.verticalLayout_4.setSpacing(10)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.label_3 = QtWidgets.QLabel(self.frame)
+        font = QtGui.QFont()
+        font.setItalic(True)
+        self.label_3.setFont(font)
+        self.label_3.setStyleSheet("color: rgb(0, 0, 0);")
+        self.label_3.setObjectName("label_3")
+        self.verticalLayout_4.addWidget(self.label_3)
+        self.checkBoxLocalVar = QtWidgets.QCheckBox(self.frame)
+        self.checkBoxLocalVar.setChecked(True)
+        self.checkBoxLocalVar.setObjectName("checkBoxLocalVar")
+        self.verticalLayout_4.addWidget(self.checkBoxLocalVar)
+        self.checkBoxWorkVar = QtWidgets.QCheckBox(self.frame)
+        self.checkBoxWorkVar.setChecked(True)
+        self.checkBoxWorkVar.setObjectName("checkBoxWorkVar")
+        self.verticalLayout_4.addWidget(self.checkBoxWorkVar)
+        self.checkBoxIf = QtWidgets.QCheckBox(self.frame)
+        self.checkBoxIf.setEnabled(True)
+        self.checkBoxIf.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.checkBoxIf.setChecked(True)
+        self.checkBoxIf.setObjectName("checkBoxIf")
+        self.verticalLayout_4.addWidget(self.checkBoxIf)
+        self.checkBoxFup = QtWidgets.QCheckBox(self.frame)
+        self.checkBoxFup.setEnabled(True)
+        self.checkBoxFup.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.checkBoxFup.setChecked(True)
+        self.checkBoxFup.setObjectName("checkBoxFup")
+        self.verticalLayout_4.addWidget(self.checkBoxFup)
+        self.horizontalLayout_6.addLayout(self.verticalLayout_4)
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_5.setContentsMargins(10, 10, 10, 10)
+        self.verticalLayout_5.setSpacing(10)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.btnConvert1 = QtWidgets.QPushButton(self.frame)
+        self.btnConvert1.setMaximumSize(QtCore.QSize(230, 23))
         self.btnConvert1.setStyleSheet("background-color: rgb(182, 182, 182);\n"
 "color: rgb(0, 0, 0);")
         self.btnConvert1.setObjectName("btnConvert1")
-        self.horizontalLayout_2.addWidget(self.btnConvert1)
-        self.btnConvert2 = QtWidgets.QPushButton(self.centralwidget)
-        self.btnConvert2.setMaximumSize(QtCore.QSize(200, 23))
+        self.verticalLayout_5.addWidget(self.btnConvert1)
+        self.btnConvert2 = QtWidgets.QPushButton(self.frame)
+        self.btnConvert2.setMaximumSize(QtCore.QSize(230, 23))
         self.btnConvert2.setStyleSheet("background-color: rgb(182, 182, 182);\n"
 "color: rgb(0, 0, 0);")
         self.btnConvert2.setObjectName("btnConvert2")
-        self.horizontalLayout_2.addWidget(self.btnConvert2)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.btnConvert12 = QtWidgets.QPushButton(self.centralwidget)
-        self.btnConvert12.setMaximumSize(QtCore.QSize(250, 23))
+        self.verticalLayout_5.addWidget(self.btnConvert2)
+        self.btnConvert12 = QtWidgets.QPushButton(self.frame)
+        self.btnConvert12.setMaximumSize(QtCore.QSize(230, 23))
         self.btnConvert12.setStyleSheet("background-color: rgb(182, 182, 182);\n"
 "color: rgb(0, 0, 0);")
         self.btnConvert12.setObjectName("btnConvert12")
-        self.horizontalLayout_3.addWidget(self.btnConvert12)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_5.addWidget(self.btnConvert12)
+        self.horizontalLayout_6.addLayout(self.verticalLayout_5)
+        self.verticalLayout.addLayout(self.horizontalLayout_6)
+        self.horizontalLayout.addWidget(self.frame)
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -136,13 +155,18 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Fanuc to NC Converter"))
-        self.label.setText(_translate("MainWindow", "Folder path:"))
-        self.btnBrowseOpenFolder.setText(_translate("MainWindow", "Select folder"))
-        self.label_2.setText(_translate("MainWindow", "Save path:"))
-        self.btnBrowseSave.setText(_translate("MainWindow", "Select folder"))
-        self.btnConvert1.setText(_translate("MainWindow", "Convert - Step 1"))
-        self.btnConvert2.setText(_translate("MainWindow", "Convert - Step 2"))
-        self.btnConvert12.setText(_translate("MainWindow", "Convert - Step 1 + Step 2"))
+        self.label.setText(_translate("MainWindow", "Путь папки с конвертируемыми файлами:"))
+        self.btnBrowseOpenFolder.setText(_translate("MainWindow", "Обзор..."))
+        self.label_2.setText(_translate("MainWindow", "Путь папки сохранения:"))
+        self.btnBrowseSave.setText(_translate("MainWindow", "Обзор..."))
+        self.label_3.setText(_translate("MainWindow", "Преобразования:"))
+        self.checkBoxLocalVar.setText(_translate("MainWindow", "Локальные переменные (+30)"))
+        self.checkBoxWorkVar.setText(_translate("MainWindow", "Рабочие переменные (-40)"))
+        self.checkBoxIf.setText(_translate("MainWindow", "IF - THEN"))
+        self.checkBoxFup.setText(_translate("MainWindow", "FUP"))
+        self.btnConvert1.setText(_translate("MainWindow", "Конвертировать - Этап 1"))
+        self.btnConvert2.setText(_translate("MainWindow", "Конвертировать - Этап 2"))
+        self.btnConvert12.setText(_translate("MainWindow", "Конвертировать - Этап 1 + Этап 2"))
 
 
 import design_rc

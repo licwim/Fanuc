@@ -19,7 +19,7 @@ import sys
 import os
 import re
 import winreg
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from design import Ui_MainWindow
 from converter import converter
@@ -43,6 +43,8 @@ class mywindow(QtWidgets.QMainWindow):
 	msgConvertError = ''
 	msgConvertDone = ''
 
+	flags = [1, 1, 1, 1]
+
 	def __init__(self):
 		super(mywindow, self).__init__()
 		self.ui = Ui_MainWindow()
@@ -56,8 +58,11 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
+		self.ui.checkBoxLocalVar.stateChanged.connect(self.checkLocalVar)
+		self.ui.checkBoxWorkVar.stateChanged.connect(self.checkWorkVar)
+		self.ui.checkBoxIf.stateChanged.connect(self.checkIf)
+		self.ui.checkBoxFup.stateChanged.connect(self.checkFup)
 		self.msgBoxes()
-
 
 	def msgBoxes(self):
 		self.msgPathNotFound = QtWidgets.QMessageBox()
@@ -79,7 +84,21 @@ class mywindow(QtWidgets.QMainWindow):
 		self.msgConvertDone.setIcon(QtWidgets.QMessageBox.Information)
 		self.msgConvertDone.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
-
+	def checkLocalVar(self, state):
+		if state == QtCore.Qt.Checked: self.flags[0] = 1
+		else: self.flags[0] = 0
+	
+	def checkWorkVar(self, state):
+		if state == QtCore.Qt.Checked: self.flags[1] = 1
+		else: self.flags[1] = 0
+	
+	def checkIf(self, state):
+		if state == QtCore.Qt.Checked: self.flags[2] = 1
+		else: self.flags[2] = 0
+	
+	def checkFup(self, state):
+		if state == QtCore.Qt.Checked: self.flags[3] = 1
+		else: self.flags[3] = 0
 
 	def clickConvert1(self):
 		self.clickConvert(1)
@@ -99,10 +118,11 @@ class mywindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				try: lines = converter(self.openFile(file), step)
-				except: 
-					self.msgConvertError.exec()
-					break
+				lines = converter(self.openFile(file), step, self.flags)
+				# try: lines = converter(self.openFile(file), step)
+				# except: 
+				# 	self.msgConvertError.exec()
+				# 	break
 				# print(lines)
 				if not lines: break
 				newfile = open(self.newFilename(step, file), "w")
