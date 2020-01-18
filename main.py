@@ -44,7 +44,13 @@ class mywindow(QtWidgets.QMainWindow):
 	msgConvertError = ''
 	msgConvertDone = ''
 
-	flags_nc = [1, 1, 1, 1]
+	# flags:	0 - Local vars
+	# 			1 - Global vars
+	# 			2 - If
+	# 			3 - Fup
+	# 			4 - #0
+
+	flags_nc = [1, 1, 1, 1, "0.000001"]
 	lang = "nc"
 
 	def __init__(self):
@@ -138,6 +144,10 @@ class mywindow(QtWidgets.QMainWindow):
 
 		if not os.path.exists(self.savepath):
 			os.mkdir(self.savepath)
+
+		null = self.ui.set_nc_Null.text()
+		if null: self.flags_nc[4] = null
+		else: self.flags_nc[4] = "0.000001"
 
 		if self.filetype == "list":
 			filelist = self.filelist

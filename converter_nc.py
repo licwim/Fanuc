@@ -19,21 +19,32 @@ import re
 
 freevars = []
 maxN = 0
-flags = dict()
 
-def converter_nc(lines, step, cbflags):
+class setFlags():
+	LocalVar = 1
+	GlobalVar = 1
+	If = 1
+	Fup = 1
+	Null = "0.000001"
+
+	def initNewFlags(self, flags):
+		self.LocalVar = flags[0]
+		self.GlobalVar = flags[1]
+		self.If = flags[2]
+		self.Fup = flags[3]
+		self.Null = flags[4]
+
+flags = setFlags()
+
+def converter_nc(lines, step, set_flags):
 	global maxN, freevars, flags
 
-	freevars = list(range(60,256))
+	# print(set_flags)
+	flags.initNewFlags(set_flags)
+	if (flags.GlobalVar): freevars = list(range(60,256))
+	else: freevars = list(range(100,256))
 	maxN = 0
-	print(cbflags)
-	flags = {
-		"cbLocalVar" : cbflags[0],
-		"cbGlobalVar" : cbflags[1],
-		"cbIf" : cbflags[2],
-		"cbFup" : cbflags[3]
-	}
-	print(flags)
+	# print(flags.LocalVar, flags.GlobalVar, flags.If, flags.Fup)
 	if step == 1: newlines = convertStep1(lines)
 	elif step == 2: newlines = convertStep2(lines)
 	else: newlines = convertStep2(convertStep1(lines))
@@ -131,10 +142,10 @@ def convertLine1(line):
 	line = line.replace(' ', '')
 	if (re.search(r"[^A-Z][A-Z][\[#]|^[A-Z][\[#]|[^A-Z][A-Z]-[\[#]|^[A-Z]-[\[#]", line) ):
 		buflines = convertCoords(line, tempvars)
-	if (flags.get("cbIf") and line.startswith("IF") and '[' in line):
+	if (flags.If and line.startswith("IF") and '[' in line):
 		buflines = convertIf(line, tempvars)
 	for line in buflines:
-		if (flags.get("cbFup") and "FUP" in line): newlines.extend(convertFup(line, tempvars))
+		if (flags.Fup and "FUP" in line): newlines.extend(convertFup(line, tempvars))
 		else: newlines.append(line)
 	return (newlines)
 
@@ -147,7 +158,7 @@ def convertLine2(line):
 	if line.startswith("GOTO"):
 		N = re.search(r"\d+", line[4:])[0]
 		line = '(BNC,"N%s")%s' % (N, line[line.index(N) + len(N):])
-	if flags.get("cbIf") and line.startswith("IF"):
+	if flags.If and line.startswith("IF"):
 		# print("LINE:",line)
 		N = line[line.index("GOTO") + 4:]
 		# print("N: %s" % N)
@@ -184,7 +195,7 @@ def convertNums(lockvars):
 	global freevars, flags
 	newvars = dict()
 
-	if (flags.get("cbGlobalVar") == 0): return (newvars)
+	if (flags.GlobalVar == 0): return (newvars)
 	lockvars.sort()
 	for num in lockvars:
 		newnum = num - 40
@@ -203,8 +214,7 @@ def replaceNum(line, newvars):
 		if num in newvars:
 			line = line.replace(num, newvars.get(num))
 		else:
-			if num == '#0': line = line.replace(num, "0.000001")
-			else: line = line.replace(num, f"#{opNum(num)}")
+			line = line.replace(num, opNum(num))
 	return (line)
 
 def opNum(num):
@@ -212,14 +222,16 @@ def opNum(num):
 	num = int(num[1:])
 	n = num
 
-	if (flags.get("cbGlobalVar") and n >= 100):
+	if (flags.GlobalVar and n >= 100):
 		n -= 40
 		if (n in freevars):
 			freevars.remove(n)
 			freevars.append(num)
-	elif (flags.get("cbLocalVar") and n in range(1, 27)):
+	elif (flags.LocalVar and n in range(1, 27)):
 		n += 30
-	return (n)
+	elif (n == 0):
+		return (flags.Null)
+	return (f"#{n}")
 
 ##
 ##			Coords
