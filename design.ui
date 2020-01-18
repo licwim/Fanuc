@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="design.qrc">
-    <normaloff>:/icon/f2nc.ico</normaloff>:/icon/f2nc.ico</iconset>
+    <normaloff>:/icon/fc.ico</normaloff>:/icon/fc.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(216, 216, 216);</string>
