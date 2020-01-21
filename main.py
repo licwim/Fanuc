@@ -19,30 +19,26 @@ import sys
 import os
 import re
 import winreg
+import json
 from PyQt5 import QtCore, QtWidgets
 
 from design import Ui_MainWindow
 from converter_nc import converter_nc
 from converter_syntec import converter_syntec
 
-# with open('tests/test.nc') as file:
-	# text = file.read()
-src = '' # text
+src = ''
 dst = ''
 
 class mywindow(QtWidgets.QMainWindow):
 	filetype = "list"
 	filelist = []
-	key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", 0, winreg.KEY_ALL_ACCESS)
-	docpath = winreg.QueryValueEx(key, "Personal")[0]
-	# print(docpath)
-	if "%USERPROFILE%" in docpath: docpath = docpath.replace("%USERPROFILE%", os.environ["USERPROFILE"])
-	savepath = docpath + "\\Fanuc Converter Files"
-	# savepath = os.getcwd() + "\\Converted_NC_files"
 
-	msgPathNotFound = ''
-	msgConvertError = ''
-	msgConvertDone = ''
+	srcpath = ""
+	dstpath = ""
+
+	# msgPathNotFound = ''
+	# msgConvertError = ''
+	# msgConvertDone = ''
 
 	# flags:	0 - Local vars
 	# 			1 - Global vars
@@ -57,9 +53,9 @@ class mywindow(QtWidgets.QMainWindow):
 		super(mywindow, self).__init__()
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
-		self.ui.textNew.setText(dst)
-		self.ui.lineOpen.setText(self.docpath)
-		self.ui.lineSave.setText(self.savepath)
+		self.initDirs()
+		self.ui.lineOpen.setText(self.srcpath)
+		self.ui.lineSave.setText(self.dstpath)
 		self.ui.btnConvert1.clicked.connect(self.clickConvert1)
 		self.ui.btnConvert2.clicked.connect(self.clickConvert2)
 		self.ui.btnConvert12.clicked.connect(self.clickConvert12)
@@ -72,30 +68,41 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.set_nc_Fup.stateChanged.connect(self.setFup)
 		self.ui.rbtnNc.clicked.connect(self.setNc)
 		self.ui.rbtnSyntec.clicked.connect(self.setSyntec)
-		self.msgBoxes()
+		# self.msgBoxes()
 
 	def test(self, state):
 		print("TEST", state)
 
-	def msgBoxes(self):
-		self.msgPathNotFound = QtWidgets.QMessageBox()
-		self.msgConvertError = QtWidgets.QMessageBox()
-		self.msgConvertDone = QtWidgets.QMessageBox()
+	def initDirs(self):
+		key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+						"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
+						0, winreg.KEY_ALL_ACCESS)
+		docpath = winreg.QueryValueEx(key, "Personal")[0]
+		if "%USERPROFILE%" in docpath: docpath = docpath.replace("%USERPROFILE%", os.environ["USERPROFILE"])
+		temppath = os.environ["TEMP"]
+		tempfile = f"{temppath}\\fanuc_convertor_dirs.json"
+		if not os.access(tempfile, os.R_OK):
+			self.srcpath = docpath
+			self.dstpath = docpath + "\\Fanuc Converter Files"
+		else:
+			with open(tempfile, "r") as file:
+				data = json.load(file)
+			print(data)
+			self.srcpath = data.get("srcpath")
+			self.dstpath = data.get("dstpath")
+			self.openFromLine(self.srcpath)
 
-		self.msgPathNotFound.setWindowTitle("Error:")
-		self.msgPathNotFound.setText("This path is not found.")
-		self.msgPathNotFound.setIcon(QtWidgets.QMessageBox.Critical)
-		self.msgPathNotFound.setStandardButtons(QtWidgets.QMessageBox.Ok)
+	def updateTemp(self):
+		temppath = os.environ["TEMP"]
+		tempfile = f"{temppath}\\fanuc_convertor_dirs.json"
+		data = {
+			"srcpath" : self.srcpath,
+			"dstpath" : self.dstpath
+		}
+		with open(tempfile, "w") as file:
+			json.dump(data, file)
 
-		self.msgConvertError.setWindowTitle("Error:")
-		self.msgConvertError.setText("Convert error!")
-		self.msgConvertError.setIcon(QtWidgets.QMessageBox.Warning)
-		self.msgConvertError.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
-		self.msgConvertDone.setWindowTitle("Succes")
-		self.msgConvertDone.setText("Convert is done.")
-		self.msgConvertDone.setIcon(QtWidgets.QMessageBox.Information)
-		self.msgConvertDone.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
 	def setNc(self, state):
 		print("NC", state)
@@ -142,8 +149,8 @@ class mywindow(QtWidgets.QMainWindow):
 
 	def clickConvert(self, step):
 
-		if not os.path.exists(self.savepath):
-			os.mkdir(self.savepath)
+		if not os.path.exists(self.dstpath):
+			os.mkdir(self.dstpath)
 
 		null = self.ui.set_nc_Null.text()
 		if null: self.flags_nc[4] = null
@@ -153,26 +160,25 @@ class mywindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				# lines = converter_nc(self.openFile(file), step, self.flags_nc)
-				try:
-					if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
-					elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
-					else:
-						self.msgConvertError.exec()
-						break
-				except: 
-					self.msgConvertError.exec()
-					break
-				# print(lines)
+				lines = converter_nc(self.openFile(file), step, self.flags_nc)
+				# try:
+				# 	if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
+				# 	elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
+				# 	else:
+				# 		self.msgConvertError.exec()
+				# 		break
+				# except: 
+				# 	self.msgConvertError.exec()
+				# 	break
 				if not lines: break
 				newfile = open(self.newFilename(step, file), "w")
 				newfile.write('\n'.join(lines))
 				newfile.close()
-			if lines: self.msgConvertDone.exec()
-		else: self.msgConvertError.exec()
+			if lines: self.ui.msgConvertDone.exec()
+		else: self.ui.msgConvertError.exec()
 
 	def newFilename(self, step, oldfile):
-		savepath = self.savepath
+		dstpath = self.dstpath
 		
 		if step == 12: step = 2
 		stepname = f"step {step}"
@@ -184,20 +190,20 @@ class mywindow(QtWidgets.QMainWindow):
 			progpart = progpart[::-1].replace(re.findall(r"step.*(\d)", progpart)[0], str(step), 1)[::-1]
 		else:
 			progpart = f"[FC ({stepname})] "
-		newfile = f"{savepath}\\{progpart}{oldfile}"
+		newfile = f"{dstpath}\\{progpart}{oldfile}"
 		return (newfile)
 
 	def openFile(self, filename):
 		print("\t\t", filename)
 		if not os.access(filename, os.R_OK):
-			self.msgPathNotFound.exec()
+			self.ui.msgPathNotFound.exec()
 			return ()
 		with open(filename) as file:
 			lines = file.readlines()
 		return (lines)
 
 	def	clickBrowseOpenFoder(self):
-		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder or files", self.docpath)
+		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder", self.srcpath)
 		path = path.replace('/', '\\')
 		print(path)
 		if not path:
@@ -209,17 +215,15 @@ class mywindow(QtWidgets.QMainWindow):
 		# print(path)
 		self.filelist.clear()
 		if path == 0: path = self.ui.lineOpen.text()
-		os.chdir(path)
-		if os.path.isfile(path):
-			# self.ui.textNew.clear()
-			self.filelist.append(path)
-			self.filetype = "list"
-		elif os.path.isdir(path):
-			self.filelist += self.findFilelist(path)
-			self.filetype = "list"
-		else:
+		if not os.path.isdir(path):
 			self.filetype = "err"
-			self.msgPathNotFound.exec()
+			self.ui.msgPathNotFound.exec()
+			return (1)
+		os.chdir(path)
+		self.srcpath = path
+		self.updateTemp()
+		self.filelist += self.findFilelist(path)
+		self.filetype = "list"
 
 	def findFilelist(self, path):
 		files = os.listdir(path)
@@ -232,13 +236,13 @@ class mywindow(QtWidgets.QMainWindow):
 		return (filelist)
 
 	def clickBrowseSaveFolder(self):
-		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder")
+		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder", self.dstpath)
 		path = path.replace('/', '\\')
 		if not path:
 			return (1)
-		self.savepath = path
 		self.ui.lineSave.setText(path)
-
+		self.dstpath = path
+		self.updateTemp()
 
 def main():
 	app = QtWidgets.QApplication([])

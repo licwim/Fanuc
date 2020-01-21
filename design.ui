@@ -233,7 +233,7 @@ color: rgb(0, 0, 0);</string>
          </property>
          <widget class="QWidget" name="tab_nc">
           <attribute name="title">
-           <string>NC</string>
+           <string>Fanuc -&gt; NC</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
@@ -344,7 +344,7 @@ color: rgb(0, 0, 0);</string>
          </widget>
          <widget class="QWidget" name="tab_syntec">
           <attribute name="title">
-           <string>Syntec</string>
+           <string>Fanuc -&gt; Syntec</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>

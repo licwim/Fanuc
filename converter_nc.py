@@ -16,6 +16,7 @@
 # ************************************************* #
 
 import re
+from itertools import groupby
 
 freevars = []
 maxN = 0
@@ -69,12 +70,12 @@ def convertStep1(lines):
 		# print('LINE: %d' % i)
 		line = replaceNum(line, newvars)
 		line = splitComments(line)
-		line = clearSpace(line)
+		# line = clearSpace(line)
 		buflines.extend(line)
 		i += 1
 	i = 1
 	freevars.sort()
-	freevars = tuple(freevars[:10])
+	freevars = tuple(freevars[:15])
 	for line in buflines:
 		# print('NEW LINE: %s' % line)
 		# print('LINE: %d' % i)
@@ -99,6 +100,10 @@ def convertStep2(lines):
 		i += 1
 	return (newlines)
 
+##
+##			Other
+##
+
 def clearSpace(lines):
 	newlines = []
 	for line in lines:
@@ -108,17 +113,12 @@ def clearSpace(lines):
 			newlines += [line]
 	return (newlines)
 
-##
-##			Other
-##
-
 def splitComments(line):
 	lines = [line]
 	if '(' in line and ')' in line:
+		# if line.lstrip('; \t')[0] == '(': return (lines)
 		newline = line.partition('(')
 		lines = [';' + newline[1] + newline[2], newline[0]]
-		# lines[0] = lines[0].strip(' \n')
-		# lines[1] = lines[1].strip(' \n')
 	return (lines)
 
 def checkN(line):
@@ -145,7 +145,9 @@ def convertLine1(line):
 	if (flags.If and line.startswith("IF") and '[' in line):
 		buflines = convertIf(line, tempvars)
 	for line in buflines:
-		if (flags.Fup and "FUP" in line): newlines.extend(convertFup(line, tempvars))
+		if ("FIX" in line) or (flags.Fup and "FUP" in line):
+			if ("FIX" in line): newlines.extend(convertFix(line, tempvars))
+			if (flags.Fup and "FUP" in line): newlines.extend(convertFup(line, tempvars))
 		else: newlines.append(line)
 	return (newlines)
 
@@ -207,15 +209,20 @@ def convertNums(lockvars):
 	return (newvars)
 
 def replaceNum(line, newvars):
+	newline = ""
 
 	nums = re.findall(r"#\d+", line)
-	nums = list(set(nums))
 	for num in nums:
 		if num in newvars:
-			line = line.replace(num, newvars.get(num))
+			newnum = newvars.get(num)
 		else:
-			line = line.replace(num, opNum(num))
-	return (line)
+			newnum = opNum(num)
+		line = line.replace(num, newnum, 1)
+		i = line.index(newnum) + len(newnum)
+		newline += line[:i]
+		line = line[i:]
+	newline += line
+	return (newline)
 
 def opNum(num):
 	global freevars, flags
@@ -318,7 +325,7 @@ def opNoIf(blocks, tempvars):
 	exitN = freeN + len(blocks) - 1
 	newlines = []
 
-	if re.search(r"[^#\[\]\.\w]+", blocks[0]): block = partIf(blocks[0], newlines, tempvars)
+	if re.search(r"[^#\[\]\.\w]", blocks[0]): block = partIf(blocks[0], newlines, tempvars)
 	else: block = 0
 	if "GOTO" in blocks[-1]:
 		if block: newlines.append("IF%s" % block + blocks[-1])
@@ -342,7 +349,7 @@ def opAndIf(blocks, tempvars):
 	exitN = freeN + len(blocks) - 1
 	for block in blocks[:-1]:
 		# print("BLOCK:", block)
-		if re.search(r"[^#\[\]\.\w]+", block): block = partIf(block, newlines, tempvars)
+		if re.search(r"[^#\[\]\.\w]", block): block = partIf(block, newlines, tempvars)
 		newlines.append("IF%sGOTO%d" % (block, freeN))
 		newlines.append("GOTO%d" % exitN)
 		newlines.append("N%d" % freeN)
@@ -360,7 +367,7 @@ def opOrIf(blocks, tempvars):
 
 	exitN = freeN + 1
 	for block in blocks[:-1]:
-		if re.search(r"[^#\[\]\.\w]+", block): block = partIf(block, newlines, tempvars)
+		if re.search(r"[^#\[\]\.\w]", block): block = partIf(block, newlines, tempvars)
 		newlines.append("IF%sGOTO%d" % (block, freeN))
 	newlines.append("GOTO%d" % exitN)
 	newlines.append("N%d" % freeN)
@@ -371,15 +378,18 @@ def opOrIf(blocks, tempvars):
 	return (newlines)
 
 def partIf(block, newlines, tempvars):
-	freevar1 = tempvars.pop(0)
-	freevar2 = tempvars.pop(0)
 	compop = re.search(r"[A-Z]+", block)[0]
 	block = block.partition(compop)
-	newlines.append(f"#{freevar1}={block[0][1:]}")
-	newlines.append(f"#{freevar2}={block[2][:-1]}")
-	block = f"[#{freevar1}{compop}#{freevar2}]"
+	if re.search(r"[^#\[\]\.\w]", block[0]):
+		freevar1 = f"#{tempvars.pop(0)}"
+		newlines.append(f"{freevar1}={block[0][1:]}")
+	else: freevar1 = block[0][1:]
+	if re.search(r"[^#\[\]\.\w]", block[2]):
+		freevar2 = f"#{tempvars.pop(0)}"
+		newlines.append(f"{freevar2}={block[2][:-1]}")
+	else: freevar2 = block[2][:-1]
+	block = f"[{freevar1}{compop}{freevar2}]"
 	return (block)
-
 
 ##
 ##			FUP
@@ -388,17 +398,41 @@ def partIf(block, newlines, tempvars):
 def convertFup(line, tempvars):
 	global maxN
 	freeN = maxN + 1
+	exitN = freeN + 1
+	maxN = exitN
 	freevar1 = tempvars.pop(0)
 	freevar2 = tempvars.pop(0)
+	freevar3 = tempvars.pop(0)
 	newlines = []
 
 	var = line[:line.index('=')]
 	math = line[line.index("FUP") + 4:-1]
 	newlines.append("#%d=%s" % (freevar1, math))
 	newlines.append("#%d=FIX[#%d]" % (freevar2, freevar1))
-	newlines.append("IF[#%d-#%dGE0.001]GOTO%d" % (freevar1, freevar2, freeN))
-	newlines.extend(["GOTO%d" % (freeN + 1), "N%d" % freeN])
+	newlines.append("#%d=#%d-#%d" % (freevar3, freevar1, freevar2))
+	newlines.append("IF[#%dGE0.001]GOTO%d" % (freevar3, freeN))
+	newlines.extend(["GOTO%d" % exitN, "N%d" % freeN])
 	newlines.append("#%d=#%d+1" % (freevar1, freevar2))
-	newlines.extend(["N%d" % (freeN + 1), "%s=#%d" % (var, freevar1)])
+	newlines.extend(["N%d" % exitN, "%s=#%d" % (var, freevar1)])
 	# print(newlines)
 	return (newlines)
+
+def convertFix(line, tempvars):
+	firstline = []
+	secondline = ""
+
+	blocks = re.findall(r"FIX\[([^\[\]]*)\]", line)
+	# print (blocks)
+	if not blocks: return ([line])
+	for block in blocks:
+		if not re.search(r"[^#\[\]\.\w]", block): continue
+		freevar = tempvars.pop(0)
+		firstline.append(f"#{freevar}={block}")
+		old = f"FIX[{block}]"
+		new = f"FIX[#{freevar}]"
+		line = line.replace(old, new, 1)
+		i = line.index(new) + len(new)
+		secondline += line[:i]
+		line = line[i:]
+	secondline += line
+	return (firstline + [secondline])
