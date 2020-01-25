@@ -292,7 +292,17 @@ color: rgb(0, 0, 0);</string>
               <item>
                <widget class="QCheckBox" name="set_nc_GlobalVar">
                 <property name="text">
-                 <string>Глобальные переменные (-40)</string>
+                 <string>Глобальные переменные &gt; 100 (-40)</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="set_nc_OverGlobalVar">
+                <property name="text">
+                 <string>Глобальные переменные &gt; 500 (-300)</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>

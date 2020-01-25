@@ -24,16 +24,18 @@ maxN = 0
 class setFlags():
 	LocalVar = 1
 	GlobalVar = 1
+	OverGlobalVar = 1
 	If = 1
 	Fup = 1
 	Null = "0.000001"
 
 	def initNewFlags(self, flags):
-		self.LocalVar = flags[0]
-		self.GlobalVar = flags[1]
-		self.If = flags[2]
-		self.Fup = flags[3]
-		self.Null = flags[4]
+		self.Null = flags[0]
+		self.LocalVar = flags[1]
+		self.GlobalVar = flags[2]
+		self.OverGlobalVar = flags[3]
+		self.If = flags[4]
+		self.Fup = flags[5]
 
 flags = setFlags()
 
@@ -42,8 +44,8 @@ def converter_nc(lines, step, set_flags):
 
 	# print(set_flags)
 	flags.initNewFlags(set_flags)
-	if (flags.GlobalVar): freevars = list(range(60,256))
-	else: freevars = list(range(100,256))
+	if (flags.GlobalVar): freevars = list(range(60,1000))
+	else: freevars = list(range(100,1000))
 	maxN = 0
 	# print(flags.LocalVar, flags.GlobalVar, flags.If, flags.Fup)
 	if step == 1: newlines = convertStep1(lines)
@@ -116,7 +118,7 @@ def clearSpace(lines):
 def splitComments(line):
 	lines = [line]
 	if '(' in line and ')' in line:
-		# if line.lstrip('; \t')[0] == '(': return (lines)
+		if line.lstrip('; \t')[0] == '(': return (lines)
 		newline = line.partition('(')
 		lines = [';' + newline[1] + newline[2], newline[0]]
 	return (lines)
@@ -154,7 +156,7 @@ def convertLine1_5(lines, tempvars, i):
 		checklist = {
 			convertFup : flags.Fup and "FUP" in line,
 			convertFix : "FIX" in line,
-			convertGt : "GT0" in line
+			convertGt : "GT0" in line # re.search(r"GT0\.?\D", line)
 		}
 		act = list(checklist.keys())[i]
 		if checklist.get(act):
@@ -205,6 +207,7 @@ def checkNum(line, lockvars):
 	for num in nums:
 		num = int(num)
 		if num in range(100, 140) and num not in lockvars: lockvars.append(num)
+		if num in range(500, 800) and num not in lockvars: lockvars.append(num)
 		if num in freevars: freevars.remove(num)
 		# elif num in range(60, 100) and num in freevars: freevars.remove(num)
 		# elif num >= 140 and num - 40 in freevars: freevars.remove(num - 40)
@@ -216,7 +219,8 @@ def convertNums(lockvars):
 	if (flags.GlobalVar == 0): return (newvars)
 	lockvars.sort()
 	for num in lockvars:
-		newnum = num - 40
+		if (num in range(100, 140)): newnum = num - 40
+		if (num in range(500, 800)): newnum = num - 300
 		while newnum not in freevars:
 			newnum += 1
 		freevars.remove(newnum)
@@ -252,6 +256,11 @@ def opNum(num):
 			freevars.append(num)
 	elif (flags.LocalVar and n in range(1, 27)):
 		n += 30
+	elif (flags.OverGlobalVar and n >= 500):
+		n -= 300
+		if (n in freevars):
+			freevars.remove(n)
+			freevars.append(num)
 	elif (n == 0):
 		return (flags.Null)
 	return (f"#{n}")
@@ -496,7 +505,10 @@ def convertFix(line, tempvars):
 def convertGt(line, tempvars):
 	newline = ""
 
-	blocks = re.findall(r"[^A-Z](GT0\.?)", line)
+	if ("GT0." in line):
+		blocks = re.findall(r"[^A-Z](GT0\.)\D", line)
+	else:
+		blocks = re.findall(r"[^A-Z](GT0)\D", line)
 	for block in blocks:
 		old = block
 		new = f"GT0.000001"

@@ -144,6 +144,10 @@ class Ui_MainWindow(object):
 		self.set_nc_GlobalVar.setChecked(True)
 		self.set_nc_GlobalVar.setObjectName("set_nc_GlobalVar")
 		self.verticalLayout_3.addWidget(self.set_nc_GlobalVar)
+		self.set_nc_OverGlobalVar = QtWidgets.QCheckBox(self.frameNc)
+		self.set_nc_OverGlobalVar.setChecked(True)
+		self.set_nc_OverGlobalVar.setObjectName("set_nc_OverGlobalVar")
+		self.verticalLayout_3.addWidget(self.set_nc_OverGlobalVar)
 		self.set_nc_If = QtWidgets.QCheckBox(self.frameNc)
 		self.set_nc_If.setEnabled(True)
 		self.set_nc_If.setMaximumSize(QtCore.QSize(16777215, 16777215))
@@ -200,9 +204,9 @@ class Ui_MainWindow(object):
 		MainWindow.setStatusBar(self.statusbar)
 
 		self.retranslateUi(MainWindow)
-		self.msgBoxes(icon)
 		self.tabSettings.setCurrentIndex(0)
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
+		self.msgBoxes(icon)
 
 	def retranslateUi(self, MainWindow):
 		_translate = QtCore.QCoreApplication.translate
@@ -220,7 +224,8 @@ class Ui_MainWindow(object):
 		self.rbtnNc.setText(_translate("MainWindow", "Конвертировать в язык NC"))
 		self.label_3.setText(_translate("MainWindow", "Значение для #0:"))
 		self.set_nc_LocalVar.setText(_translate("MainWindow", "Локальные переменные (+30)"))
-		self.set_nc_GlobalVar.setText(_translate("MainWindow", "Глобальные переменные (-40)"))
+		self.set_nc_GlobalVar.setText(_translate("MainWindow", "Глобальные переменные > 100 (-40)"))
+		self.set_nc_OverGlobalVar.setText(_translate("MainWindow", "Глобальные переменные > 500 (-300)"))
 		self.set_nc_If.setText(_translate("MainWindow", "IF - THEN"))
 		self.set_nc_Fup.setText(_translate("MainWindow", "FUP"))
 		self.tabSettings.setTabText(self.tabSettings.indexOf(self.tab_nc), _translate("MainWindow", "Fanuc -> NC"))
@@ -253,6 +258,5 @@ class Ui_MainWindow(object):
 		self.msgConvertDone.setWindowIcon(icon)
 		self.msgConvertDone.setIcon(QtWidgets.QMessageBox.Information)
 		self.msgConvertDone.setStandardButtons(QtWidgets.QMessageBox.Ok)
-
 
 import design_rc

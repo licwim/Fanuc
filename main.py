@@ -46,7 +46,7 @@ class mywindow(QtWidgets.QMainWindow):
 	# 			3 - Fup
 	# 			4 - #0
 
-	flags_nc = [1, 1, 1, 1, "0.000001"]
+	flags_nc = ["0.000001", 1, 1, 1, 1, 1]
 	lang = "nc"
 
 	def __init__(self):
@@ -63,7 +63,8 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
 		self.ui.set_nc_LocalVar.stateChanged.connect(self.setLocalVar)
-		self.ui.set_nc_GlobalVar.stateChanged.connect(self.setWorkVar)
+		self.ui.set_nc_GlobalVar.stateChanged.connect(self.setGlobalVar)
+		self.ui.set_nc_OverGlobalVar.stateChanged.connect(self.setOverGlobalVar)
 		self.ui.set_nc_If.stateChanged.connect(self.setIf)
 		self.ui.set_nc_Fup.stateChanged.connect(self.setFup)
 		self.ui.rbtnNc.clicked.connect(self.setNc)
@@ -102,8 +103,6 @@ class mywindow(QtWidgets.QMainWindow):
 		with open(tempfile, "w") as file:
 			json.dump(data, file)
 
-
-
 	def setNc(self, state):
 		print("NC", state)
 		if (state == False): self.ui.rbtnNc.toggle()
@@ -123,20 +122,24 @@ class mywindow(QtWidgets.QMainWindow):
 			self.lang = "syntec"
 
 	def setLocalVar(self, state):
-		if state == QtCore.Qt.Checked: self.flags_nc[0] = 1
-		else: self.flags_nc[0] = 0
-	
-	def setWorkVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc[1] = 1
 		else: self.flags_nc[1] = 0
 	
-	def setIf(self, state):
+	def setGlobalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc[2] = 1
 		else: self.flags_nc[2] = 0
 	
-	def setFup(self, state):
+	def setOverGlobalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc[3] = 1
 		else: self.flags_nc[3] = 0
+	
+	def setIf(self, state):
+		if state == QtCore.Qt.Checked: self.flags_nc[4] = 1
+		else: self.flags_nc[4] = 0
+	
+	def setFup(self, state):
+		if state == QtCore.Qt.Checked: self.flags_nc[5] = 1
+		else: self.flags_nc[5] = 0
 
 	def clickConvert1(self):
 		self.clickConvert(1)
@@ -149,12 +152,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 	def clickConvert(self, step):
 
-		if not os.path.exists(self.dstpath):
-			os.mkdir(self.dstpath)
-
-		null = self.ui.set_nc_Null.text()
-		if null: self.flags_nc[4] = null
-		else: self.flags_nc[4] = "0.000001"
+		self.checkLines()
 
 		if self.filetype == "list":
 			filelist = self.filelist
@@ -177,9 +175,20 @@ class mywindow(QtWidgets.QMainWindow):
 			if lines: self.ui.msgConvertDone.exec()
 		else: self.ui.msgConvertError.exec()
 
+	def checkLines(self):
+
+		null = self.ui.set_nc_Null.text()
+		if null: self.flags_nc[0] = null
+		else: self.flags_nc[0] = "0.000001"
+
+		self.dstpath = self.ui.lineSave.text()
+		if not os.path.exists(self.dstpath):
+			os.mkdir(self.dstpath)
+		self.updateTemp()
+
 	def newFilename(self, step, oldfile):
 		dstpath = self.dstpath
-		
+
 		if step == 12: step = 2
 		stepname = f"step {step}"
 		# basename = os.path.basename(file)
