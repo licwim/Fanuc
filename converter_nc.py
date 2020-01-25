@@ -384,7 +384,7 @@ def opAndIf(blocks, tempvars):
 		freeN += 1
 	if not ("GOTO" in blocks[-1]):
 		newlines.append(blocks[-1])
-		newlines.append("N%d" % exitN)
+	newlines.append("N%d" % exitN)
 	# print("AND: ", newlines)
 	maxN = exitN
 	return (newlines)
