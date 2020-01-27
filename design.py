@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
 	def setupUi(self, MainWindow):
 		MainWindow.setObjectName("MainWindow")
-		MainWindow.resize(334, 508)
+		MainWindow.resize(334, 531)
 		icon = QtGui.QIcon()
 		icon.addPixmap(QtGui.QPixmap(":/icon/fc.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 		MainWindow.setWindowIcon(icon)
@@ -132,10 +132,22 @@ class Ui_MainWindow(object):
 		self.label_3.setObjectName("label_3")
 		self.horizontalLayout_2.addWidget(self.label_3)
 		self.set_nc_Null = QtWidgets.QLineEdit(self.frameNc)
+		self.set_nc_Null.setMaximumSize(QtCore.QSize(145, 16777215))
 		self.set_nc_Null.setStyleSheet("background-color: rgb(255, 255, 255);")
 		self.set_nc_Null.setObjectName("set_nc_Null")
 		self.horizontalLayout_2.addWidget(self.set_nc_Null)
 		self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+		self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+		self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+		self.label_4 = QtWidgets.QLabel(self.frameNc)
+		self.label_4.setObjectName("label_4")
+		self.horizontalLayout_3.addWidget(self.label_4)
+		self.set_nc_Gt = QtWidgets.QLineEdit(self.frameNc)
+		self.set_nc_Gt.setMaximumSize(QtCore.QSize(145, 16777215))
+		self.set_nc_Gt.setStyleSheet("background-color: rgb(255, 255, 255);")
+		self.set_nc_Gt.setObjectName("set_nc_Gt")
+		self.horizontalLayout_3.addWidget(self.set_nc_Gt)
+		self.verticalLayout_3.addLayout(self.horizontalLayout_3)
 		self.set_nc_LocalVar = QtWidgets.QCheckBox(self.frameNc)
 		self.set_nc_LocalVar.setChecked(True)
 		self.set_nc_LocalVar.setObjectName("set_nc_LocalVar")
@@ -203,10 +215,10 @@ class Ui_MainWindow(object):
 		self.statusbar.setObjectName("statusbar")
 		MainWindow.setStatusBar(self.statusbar)
 
+		self.msgBoxes(icon)
 		self.retranslateUi(MainWindow)
 		self.tabSettings.setCurrentIndex(0)
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
-		self.msgBoxes(icon)
 
 	def retranslateUi(self, MainWindow):
 		_translate = QtCore.QCoreApplication.translate
@@ -223,6 +235,7 @@ class Ui_MainWindow(object):
 "Этап 1 + Этап 2"))
 		self.rbtnNc.setText(_translate("MainWindow", "Конвертировать в язык NC"))
 		self.label_3.setText(_translate("MainWindow", "Значение для #0:"))
+		self.label_4.setText(_translate("MainWindow", "Значение для GT0:"))
 		self.set_nc_LocalVar.setText(_translate("MainWindow", "Локальные переменные (+30)"))
 		self.set_nc_GlobalVar.setText(_translate("MainWindow", "Глобальные переменные > 100 (-40)"))
 		self.set_nc_OverGlobalVar.setText(_translate("MainWindow", "Глобальные переменные > 500 (-300)"))

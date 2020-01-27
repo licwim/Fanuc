@@ -16,10 +16,9 @@
 # ************************************************* #
 
 import re
-from itertools import groupby
 
-freevars = []
-maxN = 0
+# freevars = []
+# maxN = 0
 
 class setFlags():
 	LocalVar = 1
@@ -28,22 +27,13 @@ class setFlags():
 	If = 1
 	Fup = 1
 	Null = "0.000001"
-
-	def initNewFlags(self, flags):
-		self.Null = flags[0]
-		self.LocalVar = flags[1]
-		self.GlobalVar = flags[2]
-		self.OverGlobalVar = flags[3]
-		self.If = flags[4]
-		self.Fup = flags[5]
-
-flags = setFlags()
+	Gt = "0.000001"
 
 def converter_nc(lines, step, set_flags):
 	global maxN, freevars, flags
 
-	# print(set_flags)
-	flags.initNewFlags(set_flags)
+	flags = setFlags()
+	flags = set_flags
 	if (flags.GlobalVar): freevars = list(range(60,1000))
 	else: freevars = list(range(100,1000))
 	maxN = 0
@@ -511,7 +501,7 @@ def convertGt(line, tempvars):
 		blocks = re.findall(r"[^A-Z](GT0)\D", line)
 	for block in blocks:
 		old = block
-		new = f"GT0.000001"
+		new = f"GT{flags.Gt}"
 		line = line.replace(old, new, 1)
 		i = line.index(new) + len(new)
 		newline += line[:i]

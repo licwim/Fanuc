@@ -23,7 +23,7 @@ import json
 from PyQt5 import QtCore, QtWidgets
 
 from design import Ui_MainWindow
-from converter_nc import converter_nc
+from converter_nc import converter_nc, setFlags
 from converter_syntec import converter_syntec
 
 src = ''
@@ -46,7 +46,8 @@ class mywindow(QtWidgets.QMainWindow):
 	# 			3 - Fup
 	# 			4 - #0
 
-	flags_nc = ["0.000001", 1, 1, 1, 1, 1]
+	# flags_nc = ["0.000001", 1, 1, 1, 1, 1]
+	flags_nc = setFlags()
 	lang = "nc"
 
 	def __init__(self):
@@ -122,24 +123,24 @@ class mywindow(QtWidgets.QMainWindow):
 			self.lang = "syntec"
 
 	def setLocalVar(self, state):
-		if state == QtCore.Qt.Checked: self.flags_nc[1] = 1
-		else: self.flags_nc[1] = 0
-	
+		if state == QtCore.Qt.Checked: self.flags_nc.LocalVar = 1
+		else: self.flags_nc.LocalVar = 0
+
 	def setGlobalVar(self, state):
-		if state == QtCore.Qt.Checked: self.flags_nc[2] = 1
-		else: self.flags_nc[2] = 0
-	
+		if state == QtCore.Qt.Checked: self.flags_nc.GlobalVar = 1
+		else: self.flags_nc.GlobalVar = 0
+
 	def setOverGlobalVar(self, state):
-		if state == QtCore.Qt.Checked: self.flags_nc[3] = 1
-		else: self.flags_nc[3] = 0
-	
+		if state == QtCore.Qt.Checked: self.flags_nc.OverGlobalVar = 1
+		else: self.flags_nc.OverGlobalVar = 0
+
 	def setIf(self, state):
-		if state == QtCore.Qt.Checked: self.flags_nc[4] = 1
-		else: self.flags_nc[4] = 0
-	
+		if state == QtCore.Qt.Checked: self.flags_nc.If = 1
+		else: self.flags_nc.If = 0
+
 	def setFup(self, state):
-		if state == QtCore.Qt.Checked: self.flags_nc[5] = 1
-		else: self.flags_nc[5] = 0
+		if state == QtCore.Qt.Checked: self.flags_nc.Fup = 1
+		else: self.flags_nc.Fup = 0
 
 	def clickConvert1(self):
 		self.clickConvert(1)
@@ -177,9 +178,13 @@ class mywindow(QtWidgets.QMainWindow):
 
 	def checkLines(self):
 
-		null = self.ui.set_nc_Null.text()
-		if null: self.flags_nc[0] = null
-		else: self.flags_nc[0] = "0.000001"
+		n = self.ui.set_nc_Null.text()
+		if n: self.flags_nc.Null = n
+		else: self.flags_nc.Null = "0.000001"
+
+		n = self.ui.set_nc_Gt.text()
+		if n: self.flags_nc.Gt = n
+		else: self.flags_nc.Gt = "0.000001"
 
 		self.dstpath = self.ui.lineSave.text()
 		if not os.path.exists(self.dstpath):
