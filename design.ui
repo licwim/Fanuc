@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>334</width>
-    <height>508</height>
+    <height>531</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -233,7 +233,7 @@ color: rgb(0, 0, 0);</string>
          </property>
          <widget class="QWidget" name="tab_nc">
           <attribute name="title">
-           <string>NC</string>
+           <string>Fanuc -&gt; NC</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
@@ -272,6 +272,36 @@ color: rgb(0, 0, 0);</string>
                 </item>
                 <item>
                  <widget class="QLineEdit" name="set_nc_Null">
+                  <property name="maximumSize">
+                   <size>
+                    <width>145</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background-color: rgb(255, 255, 255);</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>Значение для GT0:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="set_nc_Gt">
+                  <property name="maximumSize">
+                   <size>
+                    <width>145</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
                   <property name="styleSheet">
                    <string notr="true">background-color: rgb(255, 255, 255);</string>
                   </property>
@@ -292,7 +322,17 @@ color: rgb(0, 0, 0);</string>
               <item>
                <widget class="QCheckBox" name="set_nc_GlobalVar">
                 <property name="text">
-                 <string>Глобальные переменные (-40)</string>
+                 <string>Глобальные переменные &gt; 100 (-40)</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="set_nc_OverGlobalVar">
+                <property name="text">
+                 <string>Глобальные переменные &gt; 500 (-300)</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -344,7 +384,7 @@ color: rgb(0, 0, 0);</string>
          </widget>
          <widget class="QWidget" name="tab_syntec">
           <attribute name="title">
-           <string>Syntec</string>
+           <string>Fanuc -&gt; Syntec</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
