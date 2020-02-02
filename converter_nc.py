@@ -108,9 +108,11 @@ def clearSpace(lines):
 def splitComments(line):
 	lines = [line]
 	if '(' in line and ')' in line:
-		if line.lstrip('; \t')[0] == '(': return (lines)
-		newline = line.partition('(')
-		lines = [';' + newline[1] + newline[2], newline[0]]
+		if line.lstrip('; \t')[0] == '(':
+			lines = [';' + line.lstrip('; \t')]
+		else:
+			newline = line.partition('(')
+			lines = [';' + newline[1] + newline[2], newline[0]]
 	return (lines)
 
 def checkN(line):
