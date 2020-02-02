@@ -169,7 +169,7 @@ def convertLine2(line):
 		line = '"%s"%s' % (N, line[line.index(N) + len(N):])
 	if line.startswith("GOTO"):
 		N = re.search(r"\d+", line[4:])[0]
-		line = '(BNC,"N%s")%s' % (N, line[line.index(N) + len(N):])
+		line = '(BNC,N%s)%s' % (N, line[line.index(N) + len(N):])
 	if flags.If and line.startswith("IF"):
 		# print("LINE:",line)
 		N = line[line.index("GOTO") + 4:]
@@ -180,7 +180,7 @@ def convertLine2(line):
 		var1 = block[1:block.index(op)]
 		var2 = block[block.index(op) + len(op):-1]
 		# print(op, var1, var2)
-		line = f'(B{op},{var1},{var2},"N{N}")'
+		line = f'(B{op},{var1},{var2},N{N})'
 		# print (line)
 	line = line.replace("FIX", "INT")
 	line = line.replace('[', '(').replace(']', ')')
