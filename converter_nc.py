@@ -162,6 +162,8 @@ def convertLine1_5(lines, tempvars, i):
 def convertLine2(line):
 	global flags
 
+	if '(' in line:
+		return (line)
 	if re.match(r"N\d+", line):
 		N = re.search(r"N\d+", line)[0]
 		line = '"%s"%s' % (N, line[line.index(N) + len(N):])
@@ -192,6 +194,8 @@ def convertLine2(line):
 def checkNum(line, lockvars):
 	global freevars
 
+	if ('(' in line):
+		line = line[:line.index('(')]
 	nums = re.findall(r"#(\d+)", line)
 	nums = list(set(nums))
 	for num in nums:
@@ -226,7 +230,9 @@ def replaceNum(line, newvars):
 		if num in newvars:
 			newnum = newvars.get(num)
 		else:
-			newnum = opNum(num)
+			if '(' in line and line.find('(') < line.find(num): comment = 1
+			else: comment = 0
+			newnum = opNum(num, comment)
 		line = line.replace(num, newnum, 1)
 		i = line.index(newnum) + len(newnum)
 		newline += line[:i]
@@ -234,21 +240,21 @@ def replaceNum(line, newvars):
 	newline += line
 	return (newline)
 
-def opNum(num):
+def opNum(num, comment):
 	global freevars, flags
 	num = int(num[1:])
 	n = num
 
 	if (flags.GlobalVar and n >= 100):
 		n -= 40
-		if (n in freevars):
+		if (n in freevars and not comment):
 			freevars.remove(n)
 			freevars.append(num)
 	elif (flags.LocalVar and n in range(1, 27)):
 		n += 30
 	elif (flags.OverGlobalVar and n >= 500):
 		n -= 300
-		if (n in freevars):
+		if (n in freevars and not comment):
 			freevars.remove(n)
 			freevars.append(num)
 	elif (n == 0):
@@ -493,6 +499,7 @@ def convertFix(line, tempvars):
 	return (firstlines + [secondline])
 
 def convertGt(line, tempvars):
+	global flags
 	newline = ""
 
 	if ("GT0." in line):
