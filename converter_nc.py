@@ -113,6 +113,8 @@ def splitComments(line):
 		else:
 			newline = line.partition('(')
 			lines = [';' + newline[1] + newline[2], newline[0]]
+		if lines[0][2:].startswith("DIS,"):
+			lines[0] = lines[0][1:]
 	return (lines)
 
 def checkN(line):

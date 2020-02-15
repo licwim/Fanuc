@@ -1,8 +1,8 @@
 
-;(asd)
+;(DIS,asd)
 ;
-(asd)
+(DIS, asd)
 ;
-#12=#14 (asd)
+#12=#14 (DIS,asd)
 ;
 #12=#14 ;(asd)
