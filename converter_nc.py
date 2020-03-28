@@ -20,7 +20,7 @@ import re
 # freevars = []
 # maxN = 0
 
-class setFlags():
+class setFlags_nc():
 	LocalVar = 1
 	GlobalVar = 1
 	OverGlobalVar = 1
@@ -32,7 +32,7 @@ class setFlags():
 def converter_nc(lines, step, set_flags):
 	global maxN, freevars, flags
 
-	flags = setFlags()
+	flags = setFlags_nc()
 	flags = set_flags
 	if (flags.GlobalVar): freevars = list(range(60,1000))
 	else: freevars = list(range(100,1000))
