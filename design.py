@@ -255,7 +255,7 @@ class Ui_MainWindow(object):
 		self.msgConvertDone = QtWidgets.QMessageBox()
 
 		self.msgPathNotFound.setWindowTitle("Error:")
-		self.msgPathNotFound.setText("This path is not found.")
+		self.msgPathNotFound.setText("Source path is not found.")
 		self.msgPathNotFound.setWindowIcon(icon)
 		self.msgPathNotFound.setIcon(QtWidgets.QMessageBox.Critical)
 		self.msgPathNotFound.setStandardButtons(QtWidgets.QMessageBox.Ok)

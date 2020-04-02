@@ -40,7 +40,6 @@ def convert_lines(lines):
 		line = line.rstrip('\n \t')
 		buflines += convert_one_line(line)
 	for line in buflines:
-		line = line.rstrip('/t/n ')
 		line = addSemicolon(line)
 		newlines.append(line)
 	return (newlines)
@@ -75,60 +74,73 @@ def convert_one_line(line):
 ##
 
 def convertRounds(line):
+	blocks = []
 	newline = ""
-	rounds = findRounds(line)
-
-	for round_ in rounds:
-		old = round_
-		i = line.index(old) + len(old)
-		if not re.match(r"\s*\*\s*1.", line[i:]):
-			new = round_ + '*1.'
-			line = line.replace(old, new, 1)
-			i = line.index(new) + len(new)
+	if "IF" in line:
+		blocks.append(re.findall(r"^IF\s*\((.*)\)\s*", line[:line.index("THEN")])[0])
+	if ':=' in line:
+		blocks.append(re.findall(r":=\s*(.*)$", line)[0])
+	for block in blocks:
+		old = block
+		new = convertBlockRound(block)
+		line = line.replace(old, new, 1)
+		i = line.index(new) + len(new)
 		newline += line[:i]
 		line = line[i:]
 	newline += line
 	return (newline)
 
-def findRounds(line):
-	bufrounds = []
-	rounds = re.findall(r"CEIL\s*[#-\(]|FLOOR\s*[#-\(]|ROUND\s*[#-\(]", line)
+def convertBlockRound(block):
+	if block.count("CEIL") + block.count("FLOOR") + block.count("ROUND") > 1:
+		block = convertSomeRounds(block)
+	else:
+		block = convertOneRound(block)
+	return (block)
 
-	for round_ in rounds:
-		line_slice = line[line.index(round_):]
-		bufrounds.append(findOneRound(line_slice))
-	return (bufrounds)
+def convertSomeRounds(block):
+	block = block.rstrip('\t ')
+	i = block.find('(') + 1
+	while block.count('(', 0, i) != block.count(')', 0, i): i += 1
+	if block[i:].replace(' ', '') == "*1.":
+		return (block)
+	if i < len(block):
+		return (f"({block})*1.")
+	else:
+		return (f"{block}*1.")
 
-def findOneRound(line, sign=0):
-	op = re.findall(r"^[A-Z]+\s*([^A-Z])", line)[0]
-	op_word = re.findall(r"(^[A-Z]+\s*)[^A-Z]", line)[0]
+def convertOneRound(block):
+	rounds = re.findall(r"CEIL\s*[#\(]|FLOOR\s*[#\(]|ROUND\s*[#\(]", block)
+	if not rounds:
+		return (block)
+	op = rounds[0][-1]
+	op_word = rounds[0][:-1]
+	block_slice = block[block.index(op_word):]
 
 	if (op == '#'):
-		round_ = re.findall(r"^[A-Z]+\s*#\d+", line)[0]
+		round_block = re.findall(r"^[A-Z]+\s*#\d+", block_slice)[0]
 	elif (op == '('):
 		i = len(op_word) + 1
-		while line.count('(', 0, i) != line.count(')', 0, i): i += 1
-		round_ = line[:i]
-	elif (op == '-'):
-		line = line.replace('-', '', 1)
-		round_ = findOneRound(line, 1)
-	if (sign == 1):
-		return (round_.replace(op_word, op_word + '-', 1))
-	return (round_)
+		while block_slice.count('(', 0, i) != block_slice.count(')', 0, i): i += 1
+		round_block = block_slice[:i]
+	i = block.index(round_block) + len(round_block)
+	if not re.match(r"\s*\*\s*1.", block[i:]):
+		block.replace(round_block, round_block + "*1.")
+	return (block)
+
 
 ##
 ##			Integers
 ##
 
 def convertInt(line):
-	nums = re.findall(r"#\d+|\d+\.\d+|\d+\.|\d+", line)
+	nums = re.findall(r"#\d+|N\d+|\d+\.\d+|\d+\.|\d+", line)
 	if not nums: return (line)
 	newline = ""
 
 	for num in nums:
 		old = num
 		i = line.index(old) + len(old)
-		if not ('#' in num or '.' in num):
+		if not ('#' in num or 'N' in num or '.' in num):
 			new = num + '.'
 			line = line.replace(old, new, 1)
 			i = line.index(new) + len(new)
@@ -142,8 +154,15 @@ def convertInt(line):
 ##
 
 def addSemicolon(line):
-	if ('(*' in line and '*)' in line) or \
-		(line.endswith(';')) or \
+	if '(*' in line and '*)' in line:
+		if re.search(r";\s*\(\*", line):
+			return (line)
+		end = re.findall(r"\s*\(\*", line)[0]
+		i = line.index(end)
+		line = list(line)
+		line.insert(i, ';')
+		return (''.join(line))
+	if (line.endswith(';')) or \
 		(line == "%"):
 		return (line)
 	return (line + ';')
