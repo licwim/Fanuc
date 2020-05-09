@@ -23,8 +23,8 @@ import json
 from PyQt5 import QtCore, QtWidgets
 
 from design import Ui_MainWindow
-from converter_nc import converter_nc, setFlags
-from converter_syntec import converter_syntec
+from converter_nc import converter_nc, setFlags_nc
+from converter_syntec import converter_syntec, setFlags_syntec
 
 src = ''
 dst = ''
@@ -36,18 +36,8 @@ class mywindow(QtWidgets.QMainWindow):
 	srcpath = ""
 	dstpath = ""
 
-	# msgPathNotFound = ''
-	# msgConvertError = ''
-	# msgConvertDone = ''
-
-	# flags:	0 - Local vars
-	# 			1 - Global vars
-	# 			2 - If
-	# 			3 - Fup
-	# 			4 - #0
-
-	# flags_nc = ["0.000001", 1, 1, 1, 1, 1]
-	flags_nc = setFlags()
+	flags_nc = setFlags_nc()
+	flags_syntec = setFlags_syntec()
 	lang = "nc"
 
 	def __init__(self):
@@ -70,7 +60,6 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.set_nc_Fup.stateChanged.connect(self.setFup)
 		self.ui.rbtnNc.clicked.connect(self.setNc)
 		self.ui.rbtnSyntec.clicked.connect(self.setSyntec)
-		# self.msgBoxes()
 
 	def test(self, state):
 		print("TEST", state)
@@ -111,6 +100,8 @@ class mywindow(QtWidgets.QMainWindow):
 			self.ui.rbtnSyntec.toggle()
 			self.ui.frameNc.setEnabled(True)
 			self.ui.frameSyntec.setEnabled(False)
+			self.ui.btnConvert2.setEnabled(True)
+			self.ui.btnConvert12.setEnabled(True)
 			self.lang = "nc"
 
 	def setSyntec(self, state):
@@ -120,6 +111,8 @@ class mywindow(QtWidgets.QMainWindow):
 			self.ui.rbtnNc.toggle()
 			self.ui.frameSyntec.setEnabled(True)
 			self.ui.frameNc.setEnabled(False)
+			self.ui.btnConvert2.setEnabled(False)
+			self.ui.btnConvert12.setEnabled(False)
 			self.lang = "syntec"
 
 	def setLocalVar(self, state):
@@ -159,16 +152,19 @@ class mywindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				lines = converter_nc(self.openFile(file), step, self.flags_nc)
-				# try:
-				# 	if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
-				# 	elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
-				# 	else:
-				# 		self.msgConvertError.exec()
-				# 		break
-				# except: 
-				# 	self.msgConvertError.exec()
-				# 	break
+				if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
+				elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
+				"""
+				try:
+					if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
+					elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
+					else:
+						self.ui.msgConvertError.exec()
+						break
+				except: 
+					self.ui.msgConvertError.exec()
+					break
+				"""
 				if not lines: break
 				newfile = open(self.newFilename(step, file), "w")
 				newfile.write('\n'.join(lines))
