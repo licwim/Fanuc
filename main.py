@@ -152,9 +152,8 @@ class mywindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
-				elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
-				"""
+				# if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
+				# elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
 				try:
 					if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
 					elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
@@ -164,7 +163,6 @@ class mywindow(QtWidgets.QMainWindow):
 				except: 
 					self.ui.msgConvertError.exec()
 					break
-				"""
 				if not lines: break
 				newfile = open(self.newFilename(step, file), "w")
 				newfile.write('\n'.join(lines))
