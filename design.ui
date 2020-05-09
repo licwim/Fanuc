@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>334</width>
-    <height>531</height>
+    <height>559</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,8 +33,8 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);
-color: rgb(0, 0, 0);</string>
+         <string notr="true">QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }
+QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }</string>
         </property>
         <property name="text">
          <string>Обзор...</string>
@@ -88,8 +88,8 @@ color: rgb(0, 0, 0);</string>
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(182, 182, 182);
-color: rgb(0, 0, 0);</string>
+         <string notr="true">QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }
+QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }</string>
         </property>
         <property name="locale">
          <locale language="English" country="UnitedStates"/>
@@ -174,8 +174,8 @@ color: rgb(0, 0, 0);</string>
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(182, 182, 182);
-color: rgb(0, 0, 0);</string>
+              <string notr="true">QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }
+QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }</string>
              </property>
              <property name="text">
               <string>Конвертировать
@@ -185,6 +185,9 @@ color: rgb(0, 0, 0);</string>
            </item>
            <item>
             <widget class="QPushButton" name="btnConvert2">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="maximumSize">
               <size>
                <width>230</width>
@@ -192,8 +195,8 @@ color: rgb(0, 0, 0);</string>
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(182, 182, 182);
-color: rgb(0, 0, 0);</string>
+              <string notr="true">QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }
+QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }</string>
              </property>
              <property name="text">
               <string>Конвертировать
@@ -203,15 +206,21 @@ color: rgb(0, 0, 0);</string>
            </item>
            <item>
             <widget class="QPushButton" name="btnConvert12">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="maximumSize">
               <size>
                <width>230</width>
                <height>35</height>
               </size>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::StrongFocus</enum>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(182, 182, 182);
-color: rgb(0, 0, 0);</string>
+              <string notr="true">QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }
+QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }</string>
              </property>
              <property name="text">
               <string>Конвертировать

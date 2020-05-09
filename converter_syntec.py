@@ -41,13 +41,16 @@ def convert_lines(lines):
 		buflines += convert_one_line(line)
 	for line in buflines:
 		line = addSemicolon(line)
-		newlines.append(line)
+		if line:
+			newlines.append(line)
+	newlines.append("%")
 	return (newlines)
 
 def convert_one_line(line):
 	newlines = []
 
 	# line = line.replace(' ', '')
+	if line == "%": return ([])
 	if re.match(r"IF\s*\[.*\]\s*GOTO", line):
 		line = line.replace("GOTO", "THEN GOTO", 1)
 	if "IF" in line:
@@ -133,14 +136,14 @@ def convertOneRound(block):
 ##
 
 def convertInt(line):
-	nums = re.findall(r"#\d+|N\d+|\d+\.\d+|\d+\.|\d+", line)
+	nums = re.findall(r"#\d+|[A-Z]\d+|\d+\.\d+|\d+\.|\d+", line)
 	if not nums: return (line)
 	newline = ""
 
 	for num in nums:
 		old = num
 		i = line.index(old) + len(old)
-		if not ('#' in num or 'N' in num or '.' in num):
+		if not re.search(r"\D", num):
 			new = num + '.'
 			line = line.replace(old, new, 1)
 			i = line.index(new) + len(new)
@@ -162,7 +165,6 @@ def addSemicolon(line):
 		line = list(line)
 		line.insert(i, ';')
 		return (''.join(line))
-	if (line.endswith(';')) or \
-		(line == "%"):
+	if line.endswith(';'):
 		return (line)
 	return (line + ';')

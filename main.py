@@ -36,17 +36,6 @@ class mywindow(QtWidgets.QMainWindow):
 	srcpath = ""
 	dstpath = ""
 
-	# msgPathNotFound = ''
-	# msgConvertError = ''
-	# msgConvertDone = ''
-
-	# flags:	0 - Local vars
-	# 			1 - Global vars
-	# 			2 - If
-	# 			3 - Fup
-	# 			4 - #0
-
-	# flags_nc = ["0.000001", 1, 1, 1, 1, 1]
 	flags_nc = setFlags_nc()
 	flags_syntec = setFlags_syntec()
 	lang = "nc"
@@ -111,6 +100,8 @@ class mywindow(QtWidgets.QMainWindow):
 			self.ui.rbtnSyntec.toggle()
 			self.ui.frameNc.setEnabled(True)
 			self.ui.frameSyntec.setEnabled(False)
+			self.ui.btnConvert2.setEnabled(True)
+			self.ui.btnConvert12.setEnabled(True)
 			self.lang = "nc"
 
 	def setSyntec(self, state):
@@ -120,6 +111,8 @@ class mywindow(QtWidgets.QMainWindow):
 			self.ui.rbtnNc.toggle()
 			self.ui.frameSyntec.setEnabled(True)
 			self.ui.frameNc.setEnabled(False)
+			self.ui.btnConvert2.setEnabled(False)
+			self.ui.btnConvert12.setEnabled(False)
 			self.lang = "syntec"
 
 	def setLocalVar(self, state):
@@ -159,8 +152,9 @@ class mywindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				# if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
-				# elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
+				if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
+				elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
+				"""
 				try:
 					if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
 					elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
@@ -170,6 +164,7 @@ class mywindow(QtWidgets.QMainWindow):
 				except: 
 					self.ui.msgConvertError.exec()
 					break
+				"""
 				if not lines: break
 				newfile = open(self.newFilename(step, file), "w")
 				newfile.write('\n'.join(lines))

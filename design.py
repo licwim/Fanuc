@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
 	def setupUi(self, MainWindow):
 		MainWindow.setObjectName("MainWindow")
-		MainWindow.resize(334, 531)
+		MainWindow.resize(334, 559)
 		icon = QtGui.QIcon()
 		icon.addPixmap(QtGui.QPixmap(":/icon/fc.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 		MainWindow.setWindowIcon(icon)
@@ -25,8 +25,8 @@ class Ui_MainWindow(object):
 		self.gridLayout.setObjectName("gridLayout")
 		self.btnBrowseOpenFolder = QtWidgets.QPushButton(self.centralwidget)
 		self.btnBrowseOpenFolder.setMaximumSize(QtCore.QSize(100, 30))
-		self.btnBrowseOpenFolder.setStyleSheet("background-color: rgb(182, 182, 182);\n"
-"color: rgb(0, 0, 0);")
+		self.btnBrowseOpenFolder.setStyleSheet("QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }\n"
+"QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }")
 		self.btnBrowseOpenFolder.setObjectName("btnBrowseOpenFolder")
 		self.gridLayout.addWidget(self.btnBrowseOpenFolder, 3, 2, 1, 1)
 		self.lineOpen = QtWidgets.QLineEdit(self.centralwidget)
@@ -51,8 +51,8 @@ class Ui_MainWindow(object):
 		self.gridLayout_2.setObjectName("gridLayout_2")
 		self.btnBrowseSave = QtWidgets.QPushButton(self.centralwidget)
 		self.btnBrowseSave.setMaximumSize(QtCore.QSize(100, 30))
-		self.btnBrowseSave.setStyleSheet("background-color: rgb(182, 182, 182);\n"
-"color: rgb(0, 0, 0);")
+		self.btnBrowseSave.setStyleSheet("QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }\n"
+"QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }")
 		self.btnBrowseSave.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
 		self.btnBrowseSave.setObjectName("btnBrowseSave")
 		self.gridLayout_2.addWidget(self.btnBrowseSave, 1, 1, 1, 1)
@@ -89,20 +89,23 @@ class Ui_MainWindow(object):
 		self.verticalLayout_5.setObjectName("verticalLayout_5")
 		self.btnConvert1 = QtWidgets.QPushButton(self.frame)
 		self.btnConvert1.setMaximumSize(QtCore.QSize(230, 35))
-		self.btnConvert1.setStyleSheet("background-color: rgb(182, 182, 182);\n"
-"color: rgb(0, 0, 0);")
+		self.btnConvert1.setStyleSheet("QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }\n"
+"QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }")
 		self.btnConvert1.setObjectName("btnConvert1")
 		self.verticalLayout_5.addWidget(self.btnConvert1)
 		self.btnConvert2 = QtWidgets.QPushButton(self.frame)
+		self.btnConvert2.setEnabled(True)
 		self.btnConvert2.setMaximumSize(QtCore.QSize(230, 35))
-		self.btnConvert2.setStyleSheet("background-color: rgb(182, 182, 182);\n"
-"color: rgb(0, 0, 0);")
+		self.btnConvert2.setStyleSheet("QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }\n"
+"QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }")
 		self.btnConvert2.setObjectName("btnConvert2")
 		self.verticalLayout_5.addWidget(self.btnConvert2)
 		self.btnConvert12 = QtWidgets.QPushButton(self.frame)
+		self.btnConvert12.setEnabled(True)
 		self.btnConvert12.setMaximumSize(QtCore.QSize(230, 35))
-		self.btnConvert12.setStyleSheet("background-color: rgb(182, 182, 182);\n"
-"color: rgb(0, 0, 0);")
+		self.btnConvert12.setFocusPolicy(QtCore.Qt.StrongFocus)
+		self.btnConvert12.setStyleSheet("QPushButton:disabled { color: rgb(158, 158, 158); background-color: rgb(202, 202, 202) }\n"
+"QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }")
 		self.btnConvert12.setObjectName("btnConvert12")
 		self.verticalLayout_5.addWidget(self.btnConvert12)
 		self.horizontalLayout.addLayout(self.verticalLayout_5)
