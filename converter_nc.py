@@ -41,6 +41,7 @@ def converter_nc(lines, step, set_flags):
 	if step == 1: newlines = convertStep1(lines)
 	elif step == 2: newlines = convertStep2(lines)
 	else: newlines = convertStep2(convertStep1(lines))
+	del maxN, freevars, flags
 	return (newlines)
 
 def convertStep1(lines):
@@ -214,7 +215,7 @@ def convertNums(lockvars):
 	global freevars, flags
 	newvars = dict()
 
-	if (flags.GlobalVar == 0): return (newvars)
+	if (flags.GlobalVar == 0 and flags.OverGlobalVar == 0): return (newvars)
 	lockvars.sort()
 	for num in lockvars:
 		if (num in range(100, 140)): newnum = num - 40

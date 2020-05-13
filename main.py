@@ -53,11 +53,12 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
-		self.ui.set_nc_LocalVar.stateChanged.connect(self.setLocalVar)
-		self.ui.set_nc_GlobalVar.stateChanged.connect(self.setGlobalVar)
-		self.ui.set_nc_OverGlobalVar.stateChanged.connect(self.setOverGlobalVar)
-		self.ui.set_nc_If.stateChanged.connect(self.setIf)
-		self.ui.set_nc_Fup.stateChanged.connect(self.setFup)
+		self.ui.set_nc_LocalVar.stateChanged.connect(self.setNcLocalVar)
+		self.ui.set_nc_GlobalVar.stateChanged.connect(self.setNcGlobalVar)
+		self.ui.set_nc_OverGlobalVar.stateChanged.connect(self.setNcOverGlobalVar)
+		self.ui.set_nc_If.stateChanged.connect(self.setNcIf)
+		self.ui.set_nc_Fup.stateChanged.connect(self.setNcFup)
+		self.ui.set_syntec_OverGlobalVar.stateChanged.connect(self.setSyntecOverGlobalVar)
 		self.ui.rbtnNc.clicked.connect(self.setNc)
 		self.ui.rbtnSyntec.clicked.connect(self.setSyntec)
 
@@ -115,25 +116,29 @@ class mywindow(QtWidgets.QMainWindow):
 			self.ui.btnConvert12.setEnabled(False)
 			self.lang = "syntec"
 
-	def setLocalVar(self, state):
+	def setNcLocalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.LocalVar = 1
 		else: self.flags_nc.LocalVar = 0
 
-	def setGlobalVar(self, state):
+	def setNcGlobalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.GlobalVar = 1
 		else: self.flags_nc.GlobalVar = 0
 
-	def setOverGlobalVar(self, state):
+	def setNcOverGlobalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.OverGlobalVar = 1
 		else: self.flags_nc.OverGlobalVar = 0
 
-	def setIf(self, state):
+	def setNcIf(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.If = 1
 		else: self.flags_nc.If = 0
 
-	def setFup(self, state):
+	def setNcFup(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.Fup = 1
 		else: self.flags_nc.Fup = 0
+
+	def setSyntecOverGlobalVar(self, state):
+		if state == QtCore.Qt.Checked: self.flags_syntec.OverGlobalVar = 1
+		else: self.flags_syntec.OverGlobalVar = 0
 
 	def clickConvert1(self):
 		self.clickConvert(1)

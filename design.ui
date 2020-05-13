@@ -416,51 +416,9 @@ QPushButton:enabled {color: rgb(0, 0, 0); background-color: rgb(182, 182, 182) }
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <widget class="QCheckBox" name="set_syntec_Set1">
+               <widget class="QCheckBox" name="set_syntec_OverGlobalVar">
                 <property name="text">
-                 <string>Настройка 1</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="set_syntec_Set2">
-                <property name="text">
-                 <string>Настройка 2</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="set_syntec_Set3">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Настройка 3</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="set_syntec_Set4">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Настройка 4</string>
+                 <string>Глобальные переменные &gt; 500 (-300)</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
