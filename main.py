@@ -21,6 +21,9 @@ import re
 import winreg
 import json
 from PyQt5 import QtCore, QtWidgets
+# from watchdog.observers.polling import PollingObserverVFS
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 from design import Ui_MainWindow
 from converter_nc import converter_nc, setFlags_nc
@@ -29,7 +32,29 @@ from converter_syntec import converter_syntec, setFlags_syntec
 src = ''
 dst = ''
 
-class mywindow(QtWidgets.QMainWindow):
+class WatchdogHandler(FileSystemEventHandler):
+
+	def __init__(self, window):
+		self.window = window
+
+	def process(self, event):
+		if event.is_directory:
+			return
+		self.window.filesUpdateSignal.emit()
+
+	def on_created(self, event):
+		self.process(event)
+
+	def on_deleted(self, event):
+		self.process(event)
+
+	def on_modified(self, event):
+		self.process(event)
+
+	def on_moved(self, event):
+		self.process(event)
+
+class MainWindow(QtWidgets.QMainWindow):
 	filetype = "list"
 	filelist = []
 
@@ -40,11 +65,17 @@ class mywindow(QtWidgets.QMainWindow):
 	flags_syntec = setFlags_syntec()
 	lang = "nc"
 
+	filesUpdateSignal = QtCore.pyqtSignal()
+	observer = Observer()
+	watch = ""
+
 	def __init__(self):
-		super(mywindow, self).__init__()
+		super(MainWindow, self).__init__()
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
 		self.initDirs()
+		self.watch = self.observer.schedule(WatchdogHandler(self), path=self.srcpath, recursive=False)
+		self.observer.start()
 		self.ui.lineOpen.setText(self.srcpath)
 		self.ui.lineSave.setText(self.dstpath)
 		self.ui.btnConvert1.clicked.connect(self.clickConvert1)
@@ -53,16 +84,19 @@ class mywindow(QtWidgets.QMainWindow):
 		self.ui.btnBrowseOpenFolder.clicked.connect(self.clickBrowseOpenFoder)
 		self.ui.btnBrowseSave.clicked.connect(self.clickBrowseSaveFolder)
 		self.ui.lineOpen.returnPressed.connect(self.openFromLine)
-		self.ui.set_nc_LocalVar.stateChanged.connect(self.setLocalVar)
-		self.ui.set_nc_GlobalVar.stateChanged.connect(self.setGlobalVar)
-		self.ui.set_nc_OverGlobalVar.stateChanged.connect(self.setOverGlobalVar)
-		self.ui.set_nc_If.stateChanged.connect(self.setIf)
-		self.ui.set_nc_Fup.stateChanged.connect(self.setFup)
+		self.filesUpdateSignal.connect(self.openFromLine)
+		self.ui.set_nc_LocalVar.stateChanged.connect(self.setNcLocalVar)
+		self.ui.set_nc_GlobalVar.stateChanged.connect(self.setNcGlobalVar)
+		self.ui.set_nc_OverGlobalVar.stateChanged.connect(self.setNcOverGlobalVar)
+		self.ui.set_nc_If.stateChanged.connect(self.setNcIf)
+		self.ui.set_nc_Fup.stateChanged.connect(self.setNcFup)
+		self.ui.set_syntec_OverGlobalVar.stateChanged.connect(self.setSyntecOverGlobalVar)
 		self.ui.rbtnNc.clicked.connect(self.setNc)
 		self.ui.rbtnSyntec.clicked.connect(self.setSyntec)
 
-	def test(self, state):
-		print("TEST", state)
+	def __del__(self):
+		self.observer.stop()
+		self.observer.join()
 
 	def initDirs(self):
 		key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
@@ -115,25 +149,29 @@ class mywindow(QtWidgets.QMainWindow):
 			self.ui.btnConvert12.setEnabled(False)
 			self.lang = "syntec"
 
-	def setLocalVar(self, state):
+	def setNcLocalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.LocalVar = 1
 		else: self.flags_nc.LocalVar = 0
 
-	def setGlobalVar(self, state):
+	def setNcGlobalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.GlobalVar = 1
 		else: self.flags_nc.GlobalVar = 0
 
-	def setOverGlobalVar(self, state):
+	def setNcOverGlobalVar(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.OverGlobalVar = 1
 		else: self.flags_nc.OverGlobalVar = 0
 
-	def setIf(self, state):
+	def setNcIf(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.If = 1
 		else: self.flags_nc.If = 0
 
-	def setFup(self, state):
+	def setNcFup(self, state):
 		if state == QtCore.Qt.Checked: self.flags_nc.Fup = 1
 		else: self.flags_nc.Fup = 0
+
+	def setSyntecOverGlobalVar(self, state):
+		if state == QtCore.Qt.Checked: self.flags_syntec.OverGlobalVar = 1
+		else: self.flags_syntec.OverGlobalVar = 0
 
 	def clickConvert1(self):
 		self.clickConvert(1)
@@ -187,17 +225,25 @@ class mywindow(QtWidgets.QMainWindow):
 
 	def newFilename(self, step, oldfile):
 		dstpath = self.dstpath
-
 		if step == 12: step = 2
 		stepname = f"step {step}"
 		# basename = os.path.basename(file)
-		progpart = re.match(r"\[FC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
+		if (self.lang == "nc"):
+			progpart = re.match(r"\[F2NC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
+		elif (self.lang == "syntec"):
+			progpart = re.match(r"\[F2S\][\s_-]*", oldfile)
+		else:
+			progpart = ""
 		if progpart:
 			progpart = progpart[0]
-			oldfile = oldfile.replace(progpart, '')
-			progpart = progpart[::-1].replace(re.findall(r"step.*(\d)", progpart)[0], str(step), 1)[::-1]
+			oldfile = oldfile.replace(progpart, '', 1)
+			# progpart = progpart[::-1].replace(re.findall(r"step.*(\d)", progpart)[0], str(step), 1)[::-1]
+		if (self.lang == "nc"):
+			progpart = f"[F2NC ({stepname})] "
+		elif (self.lang == "syntec"):
+			progpart = f"[F2S] "
 		else:
-			progpart = f"[FC ({stepname})] "
+			progpart = ""
 		newfile = f"{dstpath}\\{progpart}{oldfile}"
 		return (newfile)
 
@@ -232,6 +278,9 @@ class mywindow(QtWidgets.QMainWindow):
 		self.updateTemp()
 		self.filelist += self.findFilelist(path)
 		self.filetype = "list"
+		if (self.watch and self.watch.path != path):
+			self.observer.unschedule(self.watch)
+			self.watch = self.observer.schedule(WatchdogHandler(self), path=path, recursive=False)
 
 	def findFilelist(self, path):
 		files = os.listdir(path)
@@ -254,9 +303,11 @@ class mywindow(QtWidgets.QMainWindow):
 
 def main():
 	app = QtWidgets.QApplication([])
-	window = mywindow()
+	window = MainWindow()
 	window.show()
-	sys.exit(app.exec())
+	app.exec()
+	del window
+	sys.exit()
 
 if __name__ == '__main__':
 	main()
