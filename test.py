@@ -1,17 +1,28 @@
-import sys
-def show_sizeof(x, level=0):
-	print ("\t" * level, x.__class__, sys.getsizeof(x), x)
-	if hasattr(x, '__iter__'):
-		if hasattr(x, 'items'):
-			for xx in x.items():
-				show_sizeof(xx, level + 1)
-		else:
-			for xx in x:
-				show_sizeof(xx, level + 1)
-# show_sizeof([])
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import time
 
-import re
+class Handler(FileSystemEventHandler):
 
-testlist = ['EQ', 'EQ']
-testlist = set(testlist)
-print(testlist)
+	def on_created(self, event):
+		print (event)
+
+	def on_deleted(self, event):
+		print (event)
+
+	def on_modified(self, event):
+		print (event)
+
+	def on_moved(self, event):
+		print (event)
+
+observer = Observer()
+observer.schedule(Handler(), path='.', recursive=False)
+observer.start()
+
+try:
+	while True:
+		time.sleep(1)
+except KeyboardInterrupt:
+	observer.stop()
+observer.join()
