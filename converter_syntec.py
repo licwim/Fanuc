@@ -58,6 +58,9 @@ def convert_line(line):
 	if line == "%": return ([])
 	if (flags.OverGlobalVar == 1):
 		line = replaceNum(line)
+	if ('(' in line):
+		line, comment = convertComment(line)
+	else: comment = ''
 	if re.match(r"IF\s*\[.*\]\s*GOTO", line):
 		line = line.replace("GOTO", "THEN GOTO", 1)
 	if "IF" in line:
@@ -67,8 +70,16 @@ def convert_line(line):
 	if ('CEIL' in line) or ('FLOOR' in line) or ('ROUND' in line):
 		line = convertRounds(line)
 	line = convertInt(line)
-	newlines.insert(0, line)
+	newlines.insert(0, line + comment)
 	return (newlines)
+
+def convertComment(line):
+	comment = re.search(r"\s*\(.*\)", line)
+	if not comment:
+		return (line, '')
+	line = line.replace(comment[0], '')
+	comment = comment[0].replace('(', '(*', 1)[:-1] + '*)'
+	return (line, comment)
 
 def convertOp(line):
 	if ('(*' in line):
@@ -117,7 +128,6 @@ def convertOp(line):
 	return (newline)
 
 def convertSign(line):
-	line = line.replace('(', '(*').replace(')', '*)')
 	line = line.replace('[', '(').replace(']', ')')
 	line = line.replace('=', ':=')
 	return (line)
