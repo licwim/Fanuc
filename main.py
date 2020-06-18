@@ -112,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		else:
 			with open(tempfile, "r") as file:
 				data = json.load(file)
-			print(data)
+			# print(data)
 			self.srcpath = data.get("srcpath")
 			self.dstpath = data.get("dstpath")
 			self.openFromLine(self.srcpath)
@@ -128,7 +128,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			json.dump(data, file)
 
 	def setNc(self, state):
-		print("NC", state)
+		# print("NC", state)
 		if (state == False): self.ui.rbtnNc.toggle()
 		else:
 			self.ui.rbtnSyntec.toggle()
@@ -139,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.lang = "nc"
 
 	def setSyntec(self, state):
-		print("Syntec", state)
+		# print("Syntec", state)
 		if (state == False): self.ui.rbtnSyntec.toggle()
 		else:
 			self.ui.rbtnNc.toggle()
@@ -248,7 +248,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		return (newfile)
 
 	def openFile(self, filename):
-		print("\t\t", filename)
+		# print("\t\t", filename)
 		if not os.access(filename, os.R_OK):
 			self.ui.msgPathNotFound.exec()
 			return ()
@@ -259,7 +259,7 @@ class MainWindow(QtWidgets.QMainWindow):
 	def	clickBrowseOpenFoder(self):
 		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder", self.srcpath)
 		path = path.replace('/', '\\')
-		print(path)
+		# print(path)
 		if not path:
 			return (1)
 		self.ui.lineOpen.setText(path)

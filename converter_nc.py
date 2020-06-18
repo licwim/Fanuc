@@ -416,10 +416,10 @@ def partIf(block, newlines, tempvars):
 	i = 0
 
 	compop = re.findall(r"[A-Z]+", block)
-	print(f"ALL: {compop}")
+	# print(f"ALL: {compop}")
 	while (compop[i] in ["FUP", "FIX", "START"]): i += 1
 	compop = compop[i]
-	print(f"OP: {compop}")
+	# print(f"OP: {compop}")
 	block = block[1:-1].partition(compop)
 	if re.search(r"[^#\[\]\.\w]", block[0]):
 		freevar1 = f"#{tempvars.pop(0)}"
