@@ -188,6 +188,8 @@ def convertLine2(line):
 		line = f'(B{op},{var1},{var2},N{N})'
 		# print (line)
 	line = line.replace("FIX", "INT")
+	line = line.replace("SQRT", "SQR")
+	line = line.replace("ATAN", "ART")
 	line = line.replace('[', '(').replace(']', ')')
 	line = line.replace('#', 'E')
 	return (line)
@@ -520,3 +522,10 @@ def convertGt(line, tempvars):
 		line = line[i:]
 	newline += line
 	return ([newline])
+
+
+#############
+	#############
+	#############		SQRT -> SQR
+	#############		ATAN -> ART
+#############
