@@ -1,4 +1,4 @@
-# ************************************************* #
+# ================================================= #
 #                                                   #
 #    ───╔═╗──╔══╗╔══╗╔═╗╔═╗╔═╗╔══╗╔═╗─────╔═╗───    #
 #    ───║ ║──╚╗╔╝║╔═╝║ ║║ ║║ ║╚╗╔╝║ ║─────║ ║───    #
@@ -10,15 +10,12 @@
 #   converter_nc.py                                 #
 #       By: licwim                                  #
 #                                                   #
-#   Created: 18-01-2020 20:42:55 by licwim          #
-#   Updated: 18-01-2020 23:15:36 by licwim          #
+#   Created: 18-06-2020 23:10:35 by licwim          #
+#   Updated: 12-08-2020 00:41:19 by licwim          #
 #                                                   #
-# ************************************************* #
+# ================================================= #
 
 import re
-
-# freevars = []
-# maxN = 0
 
 class setFlags_nc():
 	LocalVar = 1
@@ -37,7 +34,6 @@ def converter_nc(lines, step, set_flags):
 	if (flags.GlobalVar): freevars = list(range(60,1000))
 	else: freevars = list(range(100,1000))
 	maxN = 0
-	# print(flags.LocalVar, flags.GlobalVar, flags.If, flags.Fup)
 	if step == 1: newlines = convertStep1(lines)
 	elif step == 2: newlines = convertStep2(lines)
 	else: newlines = convertStep2(convertStep1(lines))
@@ -45,7 +41,6 @@ def converter_nc(lines, step, set_flags):
 	return (newlines)
 
 def convertStep1(lines):
-	# print("STEP 1")
 
 	global freevars
 	newlines = []
@@ -56,22 +51,16 @@ def convertStep1(lines):
 	for line in lines:
 		checkN(line)
 		checkNum(line, lockvars)
-	# print(f"FREEVARS: {freevars}")
 	newvars = convertNums(lockvars)
 	for line in lines:
-		# print('NEW LINE: %s' % line)
-		# print('LINE: %d' % i)
 		line = replaceNum(line, newvars)
 		line = splitComments(line)
-		# line = clearSpace(line)
 		buflines.extend(line)
 		i += 1
 	i = 1
 	freevars.sort()
 	freevars = tuple(freevars[:20])
 	for line in buflines:
-		# print('NEW LINE: %s' % line)
-		# print('LINE: %d' % i)
 		lines = convertLine1(line)
 		lines = clearSpace(lines)
 		newlines.extend(lines)
@@ -79,15 +68,12 @@ def convertStep1(lines):
 	return (newlines)
 
 def convertStep2(lines):
-	# print("STEP 2")
 
 	newlines = []
 
 	i = 1
 	lines = clearSpace(lines)
 	for line in lines:
-		# print('NEW LINE: %s' % line)
-		# print('LINE: %d' % i)
 		line = convertLine2(line)
 		newlines += [line]
 		i += 1
@@ -102,7 +88,6 @@ def clearSpace(lines):
 	for line in lines:
 		line = line.strip(' \n')
 		if line:
-			# line = convertLine2(line)
 			newlines += [line]
 	return (newlines)
 
@@ -122,7 +107,6 @@ def checkN(line):
 	global maxN
 
 	find = re.match(r"N\d+", line)
-	# print(find.group(0))
 	if find and int(find.group(0)[1:]) > maxN:
 		maxN = int(find.group(0)[1:])
 
@@ -151,7 +135,7 @@ def convertLine1_5(lines, tempvars, i):
 		checklist = {
 			convertFup : flags.Fup and "FUP" in line,
 			convertFix : "FIX" in line,
-			convertGt : "GT0" in line # re.search(r"GT0\.?\D", line)
+			convertGt : "GT0" in line
 		}
 		act = list(checklist.keys())[i]
 		if checklist.get(act):
@@ -176,17 +160,12 @@ def convertLine2(line):
 		N = re.search(r"\d+", line[4:])[0]
 		line = '(BNC,N%s)%s' % (N, line[line.index(N) + len(N):])
 	if flags.If and line.startswith("IF"):
-		# print("LINE:",line)
 		N = line[line.index("GOTO") + 4:]
-		# print("N: %s" % N)
 		block = re.search(r"\[.+\]", line[:line.index("GOTO")])[0]
-		# print("BLOCK: %s" % block)
 		op = re.search(r"[A-Z]+", block)[0]
 		var1 = block[1:block.index(op)]
 		var2 = block[block.index(op) + len(op):-1]
-		# print(op, var1, var2)
 		line = f'(B{op},{var1},{var2},N{N})'
-		# print (line)
 	line = line.replace("FIX", "INT")
 	line = line.replace("SQRT", "SQR")
 	line = line.replace("ATAN", "ART")
@@ -210,8 +189,6 @@ def checkNum(line, lockvars):
 		if num in range(100, 140) and num not in lockvars: lockvars.append(num)
 		if num in range(500, 800) and num not in lockvars: lockvars.append(num)
 		if num in freevars: freevars.remove(num)
-		# elif num in range(60, 100) and num in freevars: freevars.remove(num)
-		# elif num >= 140 and num - 40 in freevars: freevars.remove(num - 40)
 
 def convertNums(lockvars):
 	global freevars, flags
@@ -277,16 +254,12 @@ def convertCoords(line, tempvars):
 	secondline = line
 
 	bufcoords = findCoords(line)
-	# print("BUFF: %s" % bufcoords)
-	# print("TEMP:", tempvars)
 	for coord in bufcoords:
 		secondline = secondline.replace(coord, convertOneCoord(coord, tempvars, firstlines))
-	# print(firstlines + secondline, '\n')
 	return (firstlines + [secondline])
 
 def convertOneCoord(coord, tempvars, firstlines):
 	freevar = tempvars.pop(0)
-	# print(tempvars)
 
 	if (coord[1] == '#'): return (coord)
 	firstlines.append(f"#{freevar}={coord[1:]}")
@@ -295,22 +268,18 @@ def convertOneCoord(coord, tempvars, firstlines):
 def findCoords(line):
 	bufcoords = []
 
-	# print(line)
 	line = '!' + line
 	coords = re.findall(r"[^A-Z]([A-Z][#\[-])", line)
 	for coord in coords:
-		# print(coord, line)
 		line = line[line.index(coord):]
 		coord = findOneCoord(line)
 		bufcoords += [coord]
-		# print(coord)
 		line = line[len(coord):]
 	return (bufcoords)
 
 def findOneCoord(line, sign = 0):
 	op = line[1]
 
-	# print("IN", line)
 	if (op == '#'):
 		coord = re.findall(r"[A-Z]#\d+", line)[0]
 	elif (op == '['):
@@ -336,10 +305,8 @@ def convertIf(line, tempvars):
 		blocks.append(re.findall(r"\[(.+)", tmp[0])[0])
 		blocks.append(''.join(re.findall(r"(.+)\].*THEN|(.+)\].*GOTO", tmp[1])[0]))
 	else: blocks.append(''.join(re.findall(r"(\[.+\]).*THEN|(\[.+\]).*GOTO", line)[0]))
-	# print("BLOCKS:", blocks)
 	if "THEN" in line:
 		blocks.append(re.findall(r"THEN(.+)", line)[0])
-		# print("\t\t\t\tTHEN:", re.findall(r"THEN(.+)", line)[0])
 	else: blocks.append(re.findall(r"GOTO.+", line)[0])
 	if "AND" in line: newlines = opAndIf(blocks, tempvars)
 	elif "OR" in line: newlines = opOrIf(blocks, tempvars)
@@ -365,7 +332,6 @@ def opNoIf(blocks, tempvars):
 	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
 	maxN = exitN
-	# print("BLOCK:", blocks)
 	return (newlines)
 
 def opAndIf(blocks, tempvars):
@@ -376,7 +342,6 @@ def opAndIf(blocks, tempvars):
 	if ("GOTO" in blocks[-1]): exitN = freeN + len(blocks) - 2
 	else: exitN = freeN + len(blocks) - 1
 	for block in blocks[:-1]:
-		# print("BLOCK:", block)
 		if re.search(r"[^#\[\]\.\w]", block): block = partIf(block, newlines, tempvars)
 		if (freeN == exitN):
 			newlines.append("IF%s%s" % (block, blocks[-1]))
@@ -388,7 +353,6 @@ def opAndIf(blocks, tempvars):
 	if not ("GOTO" in blocks[-1]):
 		newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
-	# print("AND: ", newlines)
 	maxN = exitN
 	return (newlines)
 
@@ -408,7 +372,6 @@ def opOrIf(blocks, tempvars):
 	newlines.append("N%d" % freeN)
 	newlines.append(blocks[-1])
 	newlines.append("N%d" % exitN)
-	# print("OR: ",newlines)
 	maxN = exitN
 	return (newlines)
 
@@ -416,10 +379,8 @@ def partIf(block, newlines, tempvars):
 	i = 0
 
 	compop = re.findall(r"[A-Z]+", block)
-	# print(f"ALL: {compop}")
 	while (compop[i] in ["FUP", "FIX", "START"]): i += 1
 	compop = compop[i]
-	# print(f"OP: {compop}")
 	block = block[1:-1].partition(compop)
 	if re.search(r"[^#\[\]\.\w]", block[0]):
 		freevar1 = f"#{tempvars.pop(0)}"
@@ -477,7 +438,6 @@ def convertOneFup(block, newlines, tempvars):
 		f"#{freevar1}=#{freevar2}+1",
 		f"N{exitN}"
 	]
-	# print(newlines)
 	return (freevar1)
 
 def convertFix(line, tempvars):
@@ -491,7 +451,6 @@ def convertFix(line, tempvars):
 		i = 1
 		while block.count('[', 0, i) != block.count(']', 0, i): i += 1
 		blocks += [block[1:i - 1]]
-	# print (blocks)
 	for block in blocks:
 		if not re.search(r"[^#\[\]\.\w]", block): continue
 		freevar = tempvars.pop(0)
@@ -522,10 +481,3 @@ def convertGt(line, tempvars):
 		line = line[i:]
 	newline += line
 	return ([newline])
-
-
-#############
-	#############
-	#############		SQRT -> SQR
-	#############		ATAN -> ART
-#############

@@ -1,4 +1,4 @@
-# ************************************************* #
+# ================================================= #
 #                                                   #
 #    ───╔═╗──╔══╗╔══╗╔═╗╔═╗╔═╗╔══╗╔═╗─────╔═╗───    #
 #    ───║ ║──╚╗╔╝║╔═╝║ ║║ ║║ ║╚╗╔╝║ ║─────║ ║───    #
@@ -10,10 +10,10 @@
 #   converter_syntec.py                             #
 #       By: licwim                                  #
 #                                                   #
-#   Created: 18-01-2020 23:15:18 by licwim          #
-#   Updated: 18-01-2020 23:20:40 by licwim          #
+#   Created: 18-06-2020 23:10:35 by licwim          #
+#   Updated: 12-08-2020 00:40:56 by licwim          #
 #                                                   #
-# ************************************************* #
+# ================================================= #
 
 import re
 
@@ -54,7 +54,6 @@ def convert_lines(lines):
 def convert_line(line):
 	newlines = []
 
-	# line = line.replace(' ', '')
 	if line == "%": return ([])
 	if (flags.OverGlobalVar == 1):
 		line = replaceNum(line)
@@ -95,10 +94,6 @@ def convertOp(line):
 				^LT[^A-Z]|[^A-Z]LT[^A-Z]|
 				^LE[^A-Z]|[^A-Z]LE[^A-Z]|
 				^NE[^A-Z]|[^A-Z]NE[^A-Z]"""
-	# preops = re.findall(r"FUP|FIX|EQ|GT|GE|LT|LE|NE", line)
-	# ops = []
-	# for op in preops:
-	# 	ops += re.findall(fr"[^A-Z]{op}[^A-Z]|^{op}[^A-Z]", line)
 	ops = re.findall(pattern, line)
 	convert_ops = {
 		"FUP": "CEIL",

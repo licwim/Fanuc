@@ -1,4 +1,4 @@
-# ************************************************* #
+# ================================================= #
 #                                                   #
 #    ───╔═╗──╔══╗╔══╗╔═╗╔═╗╔═╗╔══╗╔═╗─────╔═╗───    #
 #    ───║ ║──╚╗╔╝║╔═╝║ ║║ ║║ ║╚╗╔╝║ ║─────║ ║───    #
@@ -10,10 +10,10 @@
 #   main.py                                         #
 #       By: licwim                                  #
 #                                                   #
-#   Created: 06-01-2020 16:34:56 by licwim          #
-#   Updated: 13-01-2020 02:08:32 by licwim          #
+#   Created: 18-06-2020 23:10:19 by licwim          #
+#   Updated: 12-08-2020 00:41:48 by licwim          #
 #                                                   #
-# ************************************************* #
+# ================================================= #
 
 import sys
 import os
@@ -21,7 +21,6 @@ import re
 import winreg
 import json
 from PyQt5 import QtCore, QtWidgets
-# from watchdog.observers.polling import PollingObserverVFS
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -112,7 +111,6 @@ class MainWindow(QtWidgets.QMainWindow):
 		else:
 			with open(tempfile, "r") as file:
 				data = json.load(file)
-			# print(data)
 			self.srcpath = data.get("srcpath")
 			self.dstpath = data.get("dstpath")
 			self.openFromLine(self.srcpath)
@@ -128,7 +126,6 @@ class MainWindow(QtWidgets.QMainWindow):
 			json.dump(data, file)
 
 	def setNc(self, state):
-		# print("NC", state)
 		if (state == False): self.ui.rbtnNc.toggle()
 		else:
 			self.ui.rbtnSyntec.toggle()
@@ -139,7 +136,6 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.lang = "nc"
 
 	def setSyntec(self, state):
-		# print("Syntec", state)
 		if (state == False): self.ui.rbtnSyntec.toggle()
 		else:
 			self.ui.rbtnNc.toggle()
@@ -190,8 +186,6 @@ class MainWindow(QtWidgets.QMainWindow):
 			filelist = self.filelist
 			lines = []
 			for file in filelist:
-				# if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
-				# elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
 				try:
 					if (self.lang == "nc"): lines = converter_nc(self.openFile(file), step, self.flags_nc)
 					elif (self.lang == "syntec"): lines = converter_syntec(self.openFile(file), step, self.flags_syntec)
@@ -227,7 +221,6 @@ class MainWindow(QtWidgets.QMainWindow):
 		dstpath = self.dstpath
 		if step == 12: step = 2
 		stepname = f"step {step}"
-		# basename = os.path.basename(file)
 		if (self.lang == "nc"):
 			progpart = re.match(r"\[F2NC[\s_-]*\(step[\s_-]*\d\)\][\s_-]*", oldfile)
 		elif (self.lang == "syntec"):
@@ -237,7 +230,6 @@ class MainWindow(QtWidgets.QMainWindow):
 		if progpart:
 			progpart = progpart[0]
 			oldfile = oldfile.replace(progpart, '', 1)
-			# progpart = progpart[::-1].replace(re.findall(r"step.*(\d)", progpart)[0], str(step), 1)[::-1]
 		if (self.lang == "nc"):
 			progpart = f"[F2NC ({stepname})] "
 		elif (self.lang == "syntec"):
@@ -248,7 +240,6 @@ class MainWindow(QtWidgets.QMainWindow):
 		return (newfile)
 
 	def openFile(self, filename):
-		# print("\t\t", filename)
 		if not os.access(filename, os.R_OK):
 			self.ui.msgPathNotFound.exec()
 			return ()
@@ -259,14 +250,12 @@ class MainWindow(QtWidgets.QMainWindow):
 	def	clickBrowseOpenFoder(self):
 		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select folder", self.srcpath)
 		path = path.replace('/', '\\')
-		# print(path)
 		if not path:
 			return (1)
 		self.ui.lineOpen.setText(path)
 		self.openFromLine(path)
 
 	def openFromLine(self, path = 0):
-		# print(path)
 		self.filelist.clear()
 		if path == 0: path = self.ui.lineOpen.text()
 		if not os.path.isdir(path):
@@ -285,7 +274,6 @@ class MainWindow(QtWidgets.QMainWindow):
 	def findFilelist(self, path):
 		files = os.listdir(path)
 		filelist = []
-		# print (files)
 		for file in files:
 			if not os.path.isdir(file):
 				filelist.append(file)
